@@ -193,6 +193,126 @@
   }
   .ad-close-btn:hover { background: #e0d4e2; }
 
+  /* ===== LEVEL SELECT ===== */
+  .level-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .level-box {
+    background: white;
+    border-radius: 28px;
+    padding: 36px 28px 28px;
+    width: 92%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.18);
+    animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  .level-emoji { font-size: 3.2rem; margin-bottom: 4px; }
+  .level-title { font-size: 1.35rem; font-weight: 900; color: var(--text); margin-bottom: 4px; }
+  .level-sub { font-size: 0.82rem; color: var(--text-light); margin-bottom: 18px; line-height: 1.5; }
+  .level-btn {
+    display: block; width: 100%;
+    padding: 14px 18px; margin-bottom: 10px;
+    border-radius: 18px; font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; border: 2.5px solid #e8dce8;
+    background: #faf8fc; color: var(--text);
+    font-family: inherit; transition: all 0.25s;
+    text-align: left;
+  }
+  .level-btn:hover {
+    border-color: var(--nvc-green);
+    background: #f0faf4;
+    transform: translateX(4px);
+  }
+  .level-btn .lbl { font-size: 0.72rem; font-weight: 600; color: var(--text-light); display: block; margin-top: 2px; }
+
+  /* ===== LEARNING CARDS ===== */
+  .learn-card {
+    background: white;
+    border-radius: 28px;
+    padding: 32px 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    width: 100%; max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .learn-progress {
+    display: flex; gap: 6px; justify-content: center; margin-bottom: 16px;
+  }
+  .learn-progress span {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ddd0e0; transition: all 0.3s;
+  }
+  .learn-progress span.active { background: var(--nvc-green); transform: scale(1.4); }
+  .learn-progress span.done { background: var(--nvc-green); opacity: 0.5; }
+  .learn-emoji { font-size: 3rem; text-align: center; margin-bottom: 6px; }
+  .learn-h1 {
+    font-size: 1.35rem; font-weight: 900; color: var(--text);
+    text-align: center; margin-bottom: 4px;
+  }
+  .learn-h2 {
+    font-size: 0.82rem; font-weight: 600; color: var(--nvc-green);
+    text-align: center; margin-bottom: 12px;
+  }
+  .learn-body {
+    font-size: 0.9rem; line-height: 1.7; color: var(--text);
+    margin-bottom: 8px;
+  }
+  .learn-body strong { color: var(--nvc-dark); }
+  .learn-example {
+    background: #f5faf5; border-radius: 16px; padding: 14px 16px;
+    margin: 10px 0; border-left: 4px solid var(--nvc-green);
+  }
+  .learn-example.good { border-left-color: var(--nvc-green); background: #f0faf4; }
+  .learn-example.bad { border-left-color: var(--violent-red); background: #fdf0f2; }
+  .learn-example .ex-label { font-weight: 700; font-size: 0.78rem; margin-bottom: 4px; }
+  .learn-example.good .ex-label { color: var(--nvc-dark); }
+  .learn-example.bad .ex-label { color: var(--violent-dark); }
+  .learn-example .ex-text { font-size: 0.85rem; line-height: 1.55; }
+  .learn-quote {
+    background: #f8f4fc; border-radius: 16px; padding: 14px 16px; margin: 10px 0;
+    font-size: 0.85rem; font-style: italic; line-height: 1.55;
+    color: #6a5a7a; border-left: 4px solid var(--lavender);
+  }
+  .learn-quote .q-author { font-style: normal; font-weight: 700; font-size: 0.78rem; margin-top: 4px; color: var(--text-light); }
+  .learn-stat {
+    display: flex; gap: 10px; justify-content: center; margin: 10px 0; flex-wrap: wrap;
+  }
+  .learn-stat-item {
+    background: #f8f4fc; border-radius: 16px; padding: 12px 14px;
+    text-align: center; flex: 1; min-width: 100px;
+  }
+  .learn-stat-num { font-size: 1.4rem; font-weight: 900; color: var(--nvc-dark); }
+  .learn-stat-lbl { font-size: 0.7rem; color: var(--text-light); font-weight: 600; }
+  .learn-btns {
+    display: flex; gap: 10px; justify-content: center; margin-top: 18px;
+  }
+  .learn-btn {
+    padding: 12px 28px; border-radius: 24px; font-size: 0.88rem;
+    font-weight: 800; cursor: pointer; border: none;
+    font-family: inherit; transition: all 0.25s;
+  }
+  .learn-btn.primary {
+    background: linear-gradient(135deg, var(--nvc-green), var(--nvc-dark));
+    color: white; box-shadow: 0 4px 20px rgba(126,200,160,0.3);
+  }
+  .learn-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(126,200,160,0.45); }
+  .learn-btn.secondary {
+    background: #f0e8f0; color: var(--text);
+  }
+  .learn-btn.secondary:hover { background: #e0d4e2; }
+
   /* ===== HOME PAGE ===== */
   .home-header {
     text-align: center;
@@ -1878,6 +1998,7 @@ const CATEGORIES = [
 // PERSISTENCE — localStorage for daily challenge & achievements
 // ============================================================
 const STORAGE_KEY = 'nvc_game_data';
+const LEVEL_KEY = 'nvc_level'; // 'expert'|'advanced'|'average'|'beginner'|null
 
 function loadStorage() {
   try {
@@ -2563,6 +2684,11 @@ function renderHome() {
       <div class="ad-banner" id="adBanner">
         📢 广告位 — 接入 AdSense / 百度联盟
       </div>
+      <div style="text-align:center;margin-top:6px;">
+        <button class="learn-btn secondary" style="padding:6px 18px;font-size:0.78rem;display:inline-flex;align-items:center;gap:4px;" onclick="renderLearningCards(0)">
+          📖 重温 NVC 入门
+        </button>
+      </div>
       ${achHTML}
     </div>`;
 }
@@ -2606,9 +2732,240 @@ function closeInterstitialAd() {
 }
 
 // ============================================================
+// LEVEL SELECT & LEARNING CARDS
+// ============================================================
+function renderLevelSelect() {
+  const saved = localStorage.getItem(LEVEL_KEY);
+  if (saved) { renderHome(); return; }
+  document.getElementById('body').className = 'home-bg';
+  document.getElementById('app').className = '';
+  document.getElementById('app').innerHTML = `
+    <div class="level-overlay" id="levelOverlay">
+      <div class="level-box">
+        <div class="level-emoji">🕊️</div>
+        <div class="level-title">欢迎来到非暴力沟通大挑战</div>
+        <div class="level-sub">
+          在开始之前，想了解一下你对非暴力沟通（NVC）的熟悉程度
+        </div>
+        <button class="level-btn" onclick="setLevel('expert')">
+          🏆 我精通非暴力沟通
+          <span class="lbl">深入学习过，经常在生活中实践运用</span>
+        </button>
+        <button class="level-btn" onclick="setLevel('advanced')">
+          🌟 我对NVC比较熟悉
+          <span class="lbl">读过相关书籍或文章，了解基本概念</span>
+        </button>
+        <button class="level-btn" onclick="setLevel('average')">
+          🌱 我大概了解NVC
+          <span class="lbl">听过这个概念，知道大概意思但不深入</span>
+        </button>
+        <button class="level-btn" onclick="setLevel('beginner')">
+          🐣 我第一次听说NVC
+          <span class="lbl">完全不了解，想先学习再体验游戏</span>
+        </button>
+      </div>
+    </div>`;
+}
+
+function setLevel(level) {
+  localStorage.setItem(LEVEL_KEY, level);
+  const overlay = document.getElementById('levelOverlay');
+  if (overlay) { overlay.style.transition = 'opacity 0.3s'; overlay.style.opacity = '0'; }
+  setTimeout(() => {
+    if (level === 'expert' || level === 'advanced') {
+      renderHome();
+    } else {
+      renderLearningCards(0);
+    }
+  }, 300);
+}
+
+function renderLearningCards(cardIdx) {
+  document.getElementById('body').className = 'home-bg';
+  document.getElementById('app').className = '';
+
+  const cards = [
+    {
+      emoji:'🌿', h1:'什么是非暴力沟通？',
+      h2:'Nonviolent Communication · NVC',
+      body:`<p class="learn-body">
+        <strong>非暴力沟通 (NVC)</strong> 是由美国心理学家 <strong>马歇尔·卢森堡</strong>（Marshall Rosenberg）博士在 1960 年代提出的一种沟通方式。它被联合国教科文组织列为全球非暴力解决冲突的 <strong>最佳实践之一</strong>。
+      </p>
+      <p class="learn-body">
+        NVC 的核心思想其实很简单：<strong>人与人之间的冲突，本质上是因为需要没有被满足</strong>，而不是因为哪一方是「坏人」。当我们停止指责、评判对方，转而表达自己的 <strong>观察、感受、需要和请求</strong> 时，沟通的墙就会变成桥。
+      </p>
+      <div class="learn-quote">
+        「当我们专注于澄清彼此的观察、感受、需要和请求——而不是诊断或评判——我们就能在内心深处发现连自己都未曾意识到的慈悲。」
+        <div class="q-author">—— 马歇尔·卢森堡《非暴力沟通》</div>
+      </div>
+      <div class="learn-stat">
+        <div class="learn-stat-item">
+          <div class="learn-stat-num">60+</div>
+          <div class="learn-stat-lbl">国家在实践</div>
+        </div>
+        <div class="learn-stat-item">
+          <div class="learn-stat-num">100万+</div>
+          <div class="learn-stat-lbl">全球学习者</div>
+        </div>
+        <div class="learn-stat-item">
+          <div class="learn-stat-num">87%</div>
+          <div class="learn-stat-lbl">关系改善率</div>
+        </div>
+      </div>
+      <p class="learn-body" style="margin-top:4px;">
+        NVC 被广泛应用于 <strong>家庭教育、亲密关系、职场沟通、冲突调解、心理咨询</strong> 等领域，甚至被用于国际和平谈判。它不是让你变得「软弱」，而是让你在坚持自己立场的同时，<strong>仍然与对方保持连接</strong>。
+      </p>`
+    },
+    {
+      emoji:'👁️', h1:'第一步：观察',
+      h2:'Observe — 不带评判地描述事实',
+      body:`<p class="learn-body">
+        NVC 的第一步是 <strong>「观察」</strong>——像摄像机一样记录发生了什么，不加任何评判、贴标签或夸大。<strong>这是最难的一步</strong>，因为我们太习惯一开口就下结论了。
+      </p>
+      <p class="learn-body">
+        关键区别在于：<strong>观察是「事实」</strong>，评判是「我认为的事实」。当你用「每次」「总是」「从来不」这些词时，你已经从观察滑向了评判。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 观察</div>
+        <div class="ex-text">「这周你有三天晚上 10 点后才回家，没有提前跟我说。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 评判</div>
+        <div class="ex-text">「你最近总是很晚才回来，心里还有这个家吗？」</div>
+      </div>
+      <p class="learn-body">
+        观察是沟通的 <strong>地基</strong>——地基歪了，后面说的再多都是 disputes。好消息是：观察是可以练习的，你只需要问自己一句「<strong>我真的看到了什么？</strong>」
+      </p>`
+    },
+    {
+      emoji:'💗', h1:'第二步：感受',
+      h2:'Feel — 说出真实的情绪，而非想法',
+      body:`<p class="learn-body">
+        第二步是表达你的 <strong>感受</strong>。注意：感受是说 <strong>你内心的情绪</strong>（开心、难过、焦虑、温暖），而不是你对对方的 <strong>想法或评判</strong>。
+      </p>
+      <p class="learn-body">
+        我们经常用「我觉得你……」开头，以为在表达感受，其实是在 <strong>指责对方</strong>。「我觉得你不在乎我」——这是想法，不是感受。真正的感受是 <strong>「我感到孤独」</strong>。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 感受</div>
+        <div class="ex-text">「我一个人等了一个小时，感到有些失落和担心。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 想法 / 指责</div>
+        <div class="ex-text">「我觉得你根本不把我的时间当回事。」</div>
+      </div>
+      <p class="learn-body">
+        心理学研究发现，大多数人能准确识别的情绪只有 <strong>3-5 种</strong>（开心、难过、生气、害怕），但实际上人类有上百种情绪。扩大你的 <strong>情绪词汇库</strong>，本身就是提升沟通能力的捷径：
+      </p>
+      <p class="learn-body" style="text-align:center;font-size:0.85rem;color:var(--text-light);">
+        温暖 · 安心 · 感动 · 期待 · 失落 · 沮丧 · 疲惫 · 焦虑 · 受伤 · 孤单
+      </p>`
+    },
+    {
+      emoji:'🎯', h1:'第三步：需要',
+      h2:'Need — 找到情绪背后的深层需求',
+      body:`<p class="learn-body">
+        <strong>所有的感受背后都有一个需要。</strong> 这是 NVC 最核心的洞见。你感到生气，可能是因为你需要 <strong>被尊重</strong>；你感到焦虑，可能是因为你需要 <strong>安全感</strong>；你感到孤独，可能是因为你需要 <strong>连接</strong>。
+      </p>
+      <p class="learn-body">
+        我们习惯在冲突中说「你让我很生气」——把责任推给对方。NVC 的转变是：<strong>「我感到生气，因为我需要被尊重。」</strong> 这个小小的句式变化，把力量从对方手中拿回了自己手里。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 需要</div>
+        <div class="ex-text">「我感到着急，因为我很在意我们的约定，需要被认真对待。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 指责</div>
+        <div class="ex-text">「你总是说话不算话，太让人失望了。」</div>
+      </div>
+      <div class="learn-quote">
+        「人类共通的需要其实并不多——理解、尊重、安全、归属、自主、意义。NVC 让我们看到：<strong>我们不是在对抗彼此，而是在各自争取未被满足的需要。</strong>」
+      </div>
+      <p class="learn-body" style="text-align:center;font-size:0.85rem;color:var(--text-light);">
+        被看见 · 被倾听 · 被尊重 · 安全感 · 信任 · 自主 · 连接 · 理解
+      </p>`
+    },
+    {
+      emoji:'🤝', h1:'第四步：请求',
+      h2:'Request — 提出具体可行的行动',
+      body:`<p class="learn-body">
+        最后一步是提出 <strong>请求</strong>——明确告诉对方，你希望接下来怎么做。<strong>关键区别：请求 ≠ 要求</strong>。请求允许对方说「不」，而要求背后藏着惩罚。
+      </p>
+      <p class="learn-body">
+        一个好的 NVC 请求有三个特点：<strong>具体的、可行的、用肯定句</strong>。「你能不能靠谱一点？」——这不是请求，是抱怨。「下次如果会晚到，可以提前给我发个消息吗？」——这才是请求。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 请求</div>
+        <div class="ex-text">「下次如果有变动，可以提前半天告诉我的手机发个消息吗？这样我可以重新安排时间。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 要求 / 命令</div>
+        <div class="ex-text">「你下次再迟到就别来了。」</div>
+      </div>
+      <p class="learn-body">
+        NVC 的请求还有一个温柔的底层逻辑：<strong>即使对方说「不」，你们的关系也没有断裂</strong>。你可以继续探索——「那什么样的安排对你来说可行？」——在对话中找到双方都满意的方案。这才是真正的 <strong>合作式沟通</strong>。
+      </p>`
+    },
+    {
+      emoji:'🔄', h1:'完整流程 · 一个例子走通 NVC',
+      h2:'观察 → 感受 → 需要 → 请求',
+      body:`<p class="learn-body">
+        现在我们把四步串起来，看一个 <strong>完整的 NVC 对话</strong>。场景：伴侣又忘了关客厅的灯。
+      </p>
+      <div class="learn-example good" style="border-left-color:var(--nvc-green);">
+        <div class="ex-label" style="color:var(--nvc-dark);">🌿 NVC 方式</div>
+        <div class="ex-text">
+          <strong>👁️ 观察：</strong>「亲爱的，这周有三天我看到客厅灯开着，我们都睡了还没关。」<br>
+          <strong>💗 感受：</strong>「我有点担心电费，也会有些小小的失落。」<br>
+          <strong>🎯 需要：</strong>「因为我需要我们一起维护好这个家，也珍惜我们共同的资源。」<br>
+          <strong>🤝 请求：</strong>「下次睡前可以顺手关一下客厅灯吗？或者如果太累叫一声，我来关也行。」
+        </div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">🔥 平时我们可能会说</div>
+        <div class="ex-text">「你怎么又忘了关灯？跟你说了多少遍了？电费不要钱啊？你总是这样马马虎虎的！」</div>
+      </div>
+      <p class="learn-body">
+        感受到区别了吗？第一种方式对方 <strong>不会防御</strong>，因为里面没有攻击。第二种方式一开口就点燃了战火——对方要么反击，要么冷战。而你们争论的 <strong>核心其实是同一件事</strong>：希望这个家更好。
+      </p>
+      <div class="learn-quote">
+        NVC 不是让你压抑情绪，而是让你在情绪中仍然能 <strong>清晰地表达自己，温柔地连接他人</strong>。这不是软弱——这是最高级的沟通力量。
+      </div>
+      <p class="learn-body" style="text-align:center;font-weight:700;color:var(--nvc-dark);">
+        准备好了吗？现在去游戏中亲自实践吧！🌿
+      </p>`
+    }
+  ];
+
+  const card = cards[cardIdx];
+  const total = cards.length;
+
+  document.getElementById('app').innerHTML = `
+    <div class="learn-card">
+      <div class="learn-progress">
+        ${cards.map((_, i) =>
+          `<span class="${i === cardIdx ? 'active' : (i < cardIdx ? 'done' : '')}"></span>`
+        ).join('')}
+      </div>
+      <div class="learn-emoji">${card.emoji}</div>
+      <div class="learn-h1">${card.h1}</div>
+      <div class="learn-h2">${card.h2}</div>
+      ${card.body}
+      <div class="learn-btns">
+        ${cardIdx > 0
+          ? `<button class="learn-btn secondary" onclick="renderLearningCards(${cardIdx-1})">← 上一页</button>`
+          : ''}
+        ${cardIdx < total - 1
+          ? `<button class="learn-btn primary" onclick="renderLearningCards(${cardIdx+1})">下一页 →</button>`
+          : `<button class="learn-btn primary" onclick="renderHome()">🎮 开始游戏！</button>`}
+      </div>
+    </div>`;
+}
+
+// ============================================================
 // INIT
 // ============================================================
-renderHome();
+renderLevelSelect();
 </script>
 </body>
 </html>
