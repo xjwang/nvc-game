@@ -1,0 +1,2971 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>非暴力沟通大挑战 🎮</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --pink: #ff8fab;
+    --coral: #ffb3ba;
+    --peach: #ffdac1;
+    --mint: #b5ead7;
+    --lavender: #c7ceea;
+    --sky: #a2d2ff;
+    --yellow: #fdfd96;
+    --nvc-green: #7ec8a0;
+    --nvc-dark: #4a7868;
+    --violent-red: #e8738a;
+    --violent-dark: #5c2d3a;
+    --card-bg: rgba(255,255,255,0.92);
+    --shadow: 0 8px 32px rgba(0,0,0,0.06);
+    --text: #4a4458;
+    --text-light: #7a7288;
+  }
+
+  body {
+    font-family: 'Nunito', -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    transition: background 0.6s ease;
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+  body.home-bg {
+    background: linear-gradient(135deg, #fce4ec 0%, #f8e8f0 25%, #e8f0f8 50%, #f0f8e8 75%, #fff8e8 100%);
+  }
+  body.game-nvc {
+    background: linear-gradient(135deg, #e8f8e8, #d8f0d8, #e0f0e0, #e8f4e0);
+  }
+  body.game-violent {
+    background: linear-gradient(135deg, #2a1a22, #1a1016, #20141c, #2a1822);
+  }
+
+  .container { max-width: 640px; width: 100%; min-height: 500px; }
+
+  /* ===== Floating decorations ===== */
+  .float-deco {
+    position: fixed; pointer-events: none; z-index: 0;
+    font-size: 2rem; opacity: 0.1;
+  }
+
+  /* ===== Cards ===== */
+  .card {
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    border-radius: 28px;
+    padding: 36px 30px 30px;
+    box-shadow: var(--shadow);
+    border: 2px solid rgba(200,180,200,0.1);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Category selection chips */
+  .cat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 16px 0;
+  }
+  .cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 24px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: 2.5px solid #ddd0e0;
+    background: #faf8fc;
+    color: var(--text);
+    transition: all 0.2s;
+    user-select: none;
+    font-family: inherit;
+  }
+  .cat-chip:hover {
+    border-color: var(--nvc-green);
+    background: #f0faf4;
+  }
+  .cat-chip.selected {
+    border-color: var(--nvc-green);
+    background: var(--mint);
+    color: var(--nvc-dark);
+  }
+  .cat-chip input { display: none; }
+  .cat-start-btn {
+    margin-top: 8px;
+    padding: 14px 48px;
+    border-radius: 32px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    background: linear-gradient(135deg, var(--nvc-green), var(--nvc-dark));
+    color: white;
+    box-shadow: 0 6px 28px rgba(126,200,160,0.35);
+    transition: all 0.3s;
+  }
+  .cat-start-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(126,200,160,0.5);
+  }
+  .cat-start-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none !important;
+  }
+  .cat-count {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-top: 6px;
+  }
+
+  /* Ad placeholders */
+  .ad-banner {
+    width: 100%;
+    min-height: 90px;
+    margin: 16px auto 0;
+    background: rgba(200,180,200,0.08);
+    border-radius: 16px;
+    border: 1.5px dashed rgba(200,180,200,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    text-align: center;
+    padding: 8px;
+    max-width: 480px;
+  }
+  .ad-interstitial-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.55);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  .ad-interstitial-box {
+    background: white;
+    border-radius: 24px;
+    padding: 30px 24px 20px;
+    width: 90%;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.2);
+  }
+  .ad-interstitial-box .ad-placeholder {
+    width: 100%;
+    min-height: 200px;
+    background: rgba(200,180,200,0.08);
+    border-radius: 16px;
+    border: 1.5px dashed rgba(200,180,200,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin: 12px 0;
+  }
+  .ad-close-btn {
+    padding: 8px 28px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    background: #f0e8f0;
+    color: var(--text);
+    font-family: inherit;
+    transition: background 0.2s;
+  }
+  .ad-close-btn:hover { background: #e0d4e2; }
+
+  /* ===== LEVEL SELECT ===== */
+  .level-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    z-index: 998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+  .level-box {
+    background: white;
+    border-radius: 28px;
+    padding: 36px 28px 28px;
+    width: 92%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 16px 60px rgba(0,0,0,0.18);
+    animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  .level-emoji { font-size: 3.2rem; margin-bottom: 4px; }
+  .level-title { font-size: 1.35rem; font-weight: 900; color: var(--text); margin-bottom: 4px; }
+  .level-sub { font-size: 0.82rem; color: var(--text-light); margin-bottom: 18px; line-height: 1.5; }
+  .level-btn {
+    display: block; width: 100%;
+    padding: 14px 18px; margin-bottom: 10px;
+    border-radius: 18px; font-size: 0.92rem; font-weight: 700;
+    cursor: pointer; border: 2.5px solid #e8dce8;
+    background: #faf8fc; color: var(--text);
+    font-family: inherit; transition: all 0.25s;
+    text-align: left;
+  }
+  .level-btn:hover {
+    border-color: var(--nvc-green);
+    background: #f0faf4;
+    transform: translateX(4px);
+  }
+  .level-btn .lbl { font-size: 0.72rem; font-weight: 600; color: var(--text-light); display: block; margin-top: 2px; }
+
+  /* ===== LEARNING CARDS ===== */
+  .learn-card {
+    background: white;
+    border-radius: 28px;
+    padding: 32px 28px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    width: 100%; max-width: 640px;
+    margin: 0 auto;
+    position: relative;
+    animation: popIn 0.35s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes popIn {
+    0% { opacity: 0; transform: scale(0.92) translateY(12px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .learn-progress {
+    display: flex; gap: 6px; justify-content: center; margin-bottom: 16px;
+  }
+  .learn-progress span {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #ddd0e0; transition: all 0.3s;
+  }
+  .learn-progress span.active { background: var(--nvc-green); transform: scale(1.4); }
+  .learn-progress span.done { background: var(--nvc-green); opacity: 0.5; }
+  .learn-emoji { font-size: 3rem; text-align: center; margin-bottom: 6px; }
+  .learn-h1 {
+    font-size: 1.35rem; font-weight: 900; color: var(--text);
+    text-align: center; margin-bottom: 4px;
+  }
+  .learn-h2 {
+    font-size: 0.82rem; font-weight: 600; color: var(--nvc-green);
+    text-align: center; margin-bottom: 12px;
+  }
+  .learn-body {
+    font-size: 0.9rem; line-height: 1.7; color: var(--text);
+    margin-bottom: 8px;
+  }
+  .learn-body strong { color: var(--nvc-dark); }
+  .learn-example {
+    background: #f5faf5; border-radius: 16px; padding: 14px 16px;
+    margin: 10px 0; border-left: 4px solid var(--nvc-green);
+  }
+  .learn-example.good { border-left-color: var(--nvc-green); background: #f0faf4; }
+  .learn-example.bad { border-left-color: var(--violent-red); background: #fdf0f2; }
+  .learn-example .ex-label { font-weight: 700; font-size: 0.78rem; margin-bottom: 4px; }
+  .learn-example.good .ex-label { color: var(--nvc-dark); }
+  .learn-example.bad .ex-label { color: var(--violent-dark); }
+  .learn-example .ex-text { font-size: 0.85rem; line-height: 1.55; }
+  .learn-quote {
+    background: #f8f4fc; border-radius: 16px; padding: 14px 16px; margin: 10px 0;
+    font-size: 0.85rem; font-style: italic; line-height: 1.55;
+    color: #6a5a7a; border-left: 4px solid var(--lavender);
+  }
+  .learn-quote .q-author { font-style: normal; font-weight: 700; font-size: 0.78rem; margin-top: 4px; color: var(--text-light); }
+  .learn-stat {
+    display: flex; gap: 10px; justify-content: center; margin: 10px 0; flex-wrap: wrap;
+  }
+  .learn-stat-item {
+    background: #f8f4fc; border-radius: 16px; padding: 12px 14px;
+    text-align: center; flex: 1; min-width: 100px;
+  }
+  .learn-stat-num { font-size: 1.4rem; font-weight: 900; color: var(--nvc-dark); }
+  .learn-stat-lbl { font-size: 0.7rem; color: var(--text-light); font-weight: 600; }
+  .learn-btns {
+    display: flex; gap: 10px; justify-content: center; margin-top: 18px;
+  }
+  .learn-btn {
+    padding: 12px 28px; border-radius: 24px; font-size: 0.88rem;
+    font-weight: 800; cursor: pointer; border: none;
+    font-family: inherit; transition: all 0.25s;
+  }
+  .learn-btn.primary {
+    background: linear-gradient(135deg, var(--nvc-green), var(--nvc-dark));
+    color: white; box-shadow: 0 4px 20px rgba(126,200,160,0.3);
+  }
+  .learn-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(126,200,160,0.45); }
+  .learn-btn.secondary {
+    background: #f0e8f0; color: var(--text);
+  }
+  .learn-btn.secondary:hover { background: #e0d4e2; }
+
+  /* ===== HOME PAGE ===== */
+  .home-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .home-mascot {
+    font-size: 4.5rem;
+    display: inline-block;
+    animation: bounce 2s ease infinite;
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    20% { transform: translateY(-18px); }
+    40% { transform: translateY(0); }
+    60% { transform: translateY(-8px); }
+    80% { transform: translateY(0); }
+  }
+  .home-title {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ff8fab, #a2d2ff, #b5ead7, #fdfd96);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: rainbowText 4s ease infinite;
+    margin: 8px 0;
+  }
+  @keyframes rainbowText {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .home-sub {
+    font-size: 0.92rem;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+  .mode-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mode-btn {
+    padding: 18px 20px;
+    border-radius: 20px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .mode-btn .btn-emoji { font-size: 2rem; display: block; margin-bottom: 4px; }
+  .mode-btn .btn-tag { font-size: 0.78rem; font-weight: 600; opacity: 0.75; margin-top: 4px; display: block; }
+  .mode-btn.nvc {
+    background: linear-gradient(135deg, #e0f8e0, #c8f0d0);
+    color: var(--nvc-dark);
+    border-color: var(--nvc-green);
+  }
+  .mode-btn.nvc:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(120,180,140,0.3);
+    animation: wiggle 0.4s ease;
+  }
+  .mode-btn.violent {
+    background: linear-gradient(135deg, #4a2d3a, #5c3a48);
+    color: #f0d8e0;
+    border-color: var(--violent-red);
+  }
+  .mode-btn.violent:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 40px rgba(220,100,130,0.4);
+    animation: wiggle 0.4s ease;
+  }
+  @keyframes wiggle {
+    0%,100% { transform: translateY(-4px) scale(1.02) rotate(0); }
+    25% { transform: translateY(-4px) scale(1.02) rotate(-1.5deg); }
+    75% { transform: translateY(-4px) scale(1.02) rotate(1.5deg); }
+  }
+
+  /* ===== GAME PAGE ===== */
+  .game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .mode-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+  }
+  .mode-chip.nvc { background: #d8f0d8; color: var(--nvc-dark); }
+  .mode-chip.violent { background: #5c2d3a; color: #f0c8d8; }
+  .score-badge {
+    font-size: 0.9rem;
+    font-weight: 700;
+  }
+  .score-badge .score-num {
+    font-size: 1.3rem;
+    display: inline-block;
+    animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.3); opacity: 0; }
+    60% { transform: scale(1.2); }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .score-badge.nvc .score-num { color: var(--nvc-green); }
+  .score-badge.violent .score-num { color: var(--violent-red); }
+
+  /* Hearts progress */
+  .hearts-progress {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  .heart-dot {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+  }
+  .heart-dot.done.nvc { background: var(--nvc-green); color: white; animation: popIn 0.4s ease; }
+  .heart-dot.done.violent { background: var(--violent-red); color: white; animation: popIn 0.4s ease; }
+  .heart-dot.current.nvc { background: var(--nvc-green); color: white; transform: scale(1.2); box-shadow: 0 0 12px rgba(120,200,150,0.5); animation: pulse 1s ease infinite; }
+  .heart-dot.current.violent { background: var(--violent-red); color: white; transform: scale(1.2); box-shadow: 0 0 12px rgba(220,100,130,0.5); animation: pulse 1s ease infinite; }
+  .heart-dot.pending { background: #e8e0e8; }
+  .game-violent .heart-dot.pending { background: #3a2835; }
+
+  .scenario-chip {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 14px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .scenario-chip.nvc { background: #fef0d8; color: #9a7a50; }
+  .scenario-chip.violent { background: #4a2d3a; color: #e0b0c0; }
+
+  /* Scenario description */
+  .scenario-desc {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.9;
+    padding: 18px 22px;
+    margin: 10px 0 6px;
+    border-radius: 16px;
+  }
+  .scenario-desc.nvc { background: #fcfaf4; border-left: 4px solid var(--nvc-green); }
+  .scenario-desc.violent { background: #2a1a24; border-left: 4px solid var(--violent-red); color: #d8c8d0; }
+  .scenario-emotion-hint {
+    font-size: 0.85rem;
+    color: #9a8a78;
+    font-style: italic;
+    margin-bottom: 8px;
+  }
+  .game-violent .scenario-emotion-hint { color: #b098a0; }
+
+  /* Flow diagram */
+  .flow-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin: 14px 0 22px;
+    flex-wrap: wrap;
+  }
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 64px;
+  }
+  .flow-dot {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 800;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+  }
+  .flow-dot.done { color: white; }
+  .flow-dot.done.nvc { background: var(--nvc-green); }
+  .flow-dot.done.violent { background: var(--violent-red); }
+  .flow-dot.active {
+    color: white; transform: scale(1.18);
+    box-shadow: 0 0 0 6px rgba(120,200,150,0.18);
+    animation: flowPulse 1.4s ease infinite;
+  }
+  .flow-dot.active.nvc { background: var(--nvc-green); box-shadow: 0 0 0 6px rgba(120,200,150,0.18); }
+  .flow-dot.active.violent { background: var(--violent-red); box-shadow: 0 0 0 6px rgba(220,100,130,0.18); }
+  @keyframes flowPulse {
+    0%,100% { box-shadow: 0 0 0 6px rgba(120,200,150,0.18); }
+    50% { box-shadow: 0 0 0 14px rgba(120,200,150,0.05); }
+  }
+  .flow-dot.pending { background: #e8e0e8; color: #b8b0b8; }
+  .game-violent .flow-dot.pending { background: #3a2835; color: #7a6878; }
+  .flow-line {
+    width: 36px; height: 3px;
+    border-radius: 2px;
+    transition: all 0.4s ease;
+    flex-shrink: 0;
+  }
+  .flow-line.done.nvc { background: var(--nvc-green); }
+  .flow-line.done.violent { background: var(--violent-red); }
+  .flow-line.pending { background: #e0d8e0; }
+  .game-violent .flow-line.pending { background: #3a2835; }
+  .flow-label {
+    font-size: 0.7rem; font-weight: 700; opacity: 0.6; letter-spacing: 0.04em;
+    transition: all 0.3s;
+  }
+  .flow-node.active-node .flow-label { opacity: 1; }
+
+  /* Share */
+  .share-row {
+    display: flex; justify-content: center; margin: 6px 0 14px;
+  }
+  .btn-share {
+    padding: 10px 28px; border-radius: 30px;
+    font-size: 0.88rem; font-weight: 800; cursor: pointer;
+    border: 2.5px dashed #d0c0d0;
+    background: #faf8fc;
+    color: #8a7a90;
+    transition: all 0.3s; font-family: inherit;
+  }
+  .btn-share:hover {
+    border-color: #b090c0; color: #6a5080;
+    transform: translateY(-2px); box-shadow: 0 4px 16px rgba(150,120,180,0.15);
+  }
+  #shareCanvas { display: none; }
+
+  /* Smooth question transition */
+  .question-area {
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+  .question-area.switching {
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+  }
+
+  /* Navigation buttons */
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    gap: 10px;
+  }
+  .btn-nav {
+    padding: 8px 18px;
+    border-radius: 22px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.25s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .btn-nav.prev {
+    background: #f0e8f0;
+    color: #6a5a7a;
+  }
+  .btn-nav.prev:hover { background: #e0d4e2; transform: translateX(-2px); }
+  .btn-nav.next {
+    background: var(--nvc-green);
+    color: white;
+  }
+  .btn-nav.next:hover { background: var(--nvc-dark); transform: translateX(2px); }
+  .btn-nav:disabled {
+    opacity: 0.3;
+    cursor: default;
+    transform: none !important;
+  }
+  .game-violent .btn-nav.prev {
+    background: #3a2835;
+    color: #c8b8c8;
+  }
+  .game-violent .btn-nav.next {
+    background: var(--violent-red);
+  }
+  .nav-scene-indicator {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .game-violent .nav-scene-indicator { color: #d8c8d0; }
+
+  /* Result reveal */
+  .reveal-hidden { display: none; }
+  .btn-reveal {
+    padding: 14px 42px;
+    border-radius: 32px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    background: linear-gradient(135deg, #ff8fab, #ff7eb3);
+    color: white;
+    box-shadow: 0 6px 28px rgba(255,143,171,0.35);
+    transition: all 0.3s;
+    animation: pulseGlow 2s ease infinite;
+  }
+  @keyframes pulseGlow {
+    0%,100% { box-shadow: 0 6px 28px rgba(255,143,171,0.35); }
+    50% { box-shadow: 0 8px 40px rgba(255,143,171,0.55); }
+  }
+  .btn-reveal:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 36px rgba(255,143,171,0.5);
+  }
+  .reveal-anim {
+    animation: revealIn 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .reveal-anim.d1 { animation-delay: 0s; }
+  .reveal-anim.d2 { animation-delay: 0.1s; }
+  .reveal-anim.d3 { animation-delay: 0.2s; }
+  .reveal-anim.d4 { animation-delay: 0.3s; }
+  .reveal-anim.d5 { animation-delay: 0.4s; }
+  @keyframes revealIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .score-count-up {
+    display: inline-block;
+    animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .element-label {
+    font-size: 0.9rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .element-label.nvc { color: var(--nvc-green); }
+  .element-label.violent { color: var(--violent-red); }
+
+  .question-box {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.9;
+    padding: 18px 22px;
+    border-radius: 16px;
+  }
+  .question-box.nvc { background: #f6fdf6; border: 2px dashed var(--nvc-green); }
+  .question-box.violent {
+    color: #e0d0d8;
+    background: #2a1822;
+    border: 2px dashed var(--violent-red);
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .opt-btn {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border: 2.5px solid #e8e0e8;
+    border-radius: 16px;
+    background: #fefcfe;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text);
+    text-align: left;
+    line-height: 1.6;
+    animation: slideUp 0.35s ease both;
+  }
+  .opt-btn:nth-child(1) { animation-delay: 0.12s; }
+  .opt-btn:nth-child(2) { animation-delay: 0.17s; }
+  .opt-btn:nth-child(3) { animation-delay: 0.22s; }
+  .opt-btn:nth-child(4) { animation-delay: 0.27s; }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .opt-btn:hover { transform: translateX(6px); border-color: #c0d0c0; background: #f8fcf8; }
+  .game-violent .opt-btn:hover { transform: translateX(6px); border-color: #8a6070; }
+  .game-violent .opt-btn {
+    background: #2a1a24;
+    border-color: #4a303d;
+    color: #d8c8d0;
+  }
+
+  .opt-letter {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.82rem; font-weight: 900;
+    flex-shrink: 0;
+    border: 2.5px solid #d8d0d8;
+    color: #a898a8;
+    transition: all 0.25s;
+  }
+  .game-violent .opt-letter { border-color: #6a5060; color: #b098a8; }
+
+  .opt-btn.selected { border-color: var(--nvc-green); background: #f0faf2; transform: scale(1.02); box-shadow: 0 4px 20px rgba(120,200,150,0.15); }
+  .opt-btn.selected .opt-letter { border-color: var(--nvc-green); background: var(--nvc-green); color: white; animation: popIn 0.3s ease; }
+  .game-violent .opt-btn.selected { border-color: var(--violent-red); background: #3a1a28; box-shadow: 0 4px 20px rgba(220,100,130,0.2); }
+  .game-violent .opt-btn.selected .opt-letter { border-color: var(--violent-red); background: var(--violent-red); color: white; }
+
+  .btn-row { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn {
+    padding: 12px 28px; border-radius: 30px;
+    font-size: 0.9rem; font-weight: 800;
+    cursor: pointer; border: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit; letter-spacing: 0.03em;
+  }
+  .btn-next { background: var(--nvc-green); color: white; }
+  .btn-next:hover:not(:disabled) { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 24px rgba(120,200,150,0.35); }
+  .btn-next:disabled { background: #d0c8d0; cursor: not-allowed; }
+  .game-violent .btn-next { background: var(--violent-red); }
+  .game-violent .btn-next:hover:not(:disabled) { box-shadow: 0 8px 24px rgba(220,100,130,0.4); }
+  .game-violent .btn-next:disabled { background: #5a4048; }
+
+  .btn-quit {
+    background: transparent; color: var(--text-light);
+    border: 2.5px solid #e0d8e0;
+  }
+  .btn-quit:hover { border-color: #c0b0c0; transform: translateY(-2px); }
+  .game-violent .btn-quit { color: #b098a8; border-color: #5a4050; }
+  .game-violent .btn-quit:hover { border-color: #9a7080; }
+
+  /* ===== RESULT PAGE ===== */
+  .result-wrap {
+    text-align: center;
+  }
+  .result-emoji {
+    font-size: 5rem;
+    display: inline-block;
+  }
+  .result-title {
+    font-size: 1.8rem; font-weight: 900; margin: 8px 0 4px;
+  }
+  .result-nickname {
+    font-size: 1.1rem; font-weight: 700; opacity: 0.85;
+    margin-bottom: 12px; font-style: italic;
+  }
+  .result-score-wrap {
+    display: inline-block; cursor: pointer;
+    padding: 8px 20px; border-radius: 30px;
+    transition: all 0.3s;
+    position: relative;
+  }
+  .result-score-wrap:hover { transform: scale(1.05); }
+  .result-score-big {
+    font-size: 4rem; font-weight: 900; line-height: 1;
+    transition: all 0.3s;
+  }
+  .result-score-big.nvc { color: var(--nvc-green); }
+  .result-score-big.violent { color: var(--violent-red); }
+  .result-score-sub {
+    font-size: 0.85rem; opacity: 0.7; font-weight: 600;
+  }
+  .result-score-hint {
+    font-size: 0.72rem; opacity: 0.5; margin-top: 2px;
+  }
+  .result-msg {
+    font-size: 0.9rem; line-height: 1.8;
+    padding: 16px 18px; border-radius: 16px;
+    margin: 18px 0; text-align: left;
+  }
+  .result-msg.nvc { background: #f6fdf6; color: #4a6a50; }
+  .result-msg.violent { background: #2a1822; color: #d8c0c8; }
+
+  /* Breakdown (hidden by default) */
+  .breakdown-wrap {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), margin 0.3s;
+    margin-top: 0;
+  }
+  .breakdown-wrap.open { max-height: 300px; margin-top: 14px; }
+  .breakdown-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .break-item {
+    padding: 10px 6px; border-radius: 12px;
+    text-align: center; background: #f8f4f8;
+  }
+  .break-item .b-label { font-size: 0.7rem; font-weight: 700; opacity: 0.7; margin-bottom: 2px; }
+  .break-item .b-score { font-size: 1.1rem; font-weight: 900; }
+  .break-item .b-score.nvc-c { color: var(--nvc-green); }
+  .break-item .b-score.v-c { color: var(--violent-red); }
+
+  /* Three game buttons */
+  .result-btns {
+    display: flex; gap: 10px; justify-content: center;
+    flex-wrap: wrap; margin-top: 20px;
+  }
+  .rbtn {
+    flex: 1; min-width: 100px;
+    padding: 14px 10px; border-radius: 18px;
+    font-size: 0.82rem; font-weight: 800;
+    cursor: pointer; border: 3px solid transparent;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    font-family: inherit; text-align: center;
+    letter-spacing: 0.03em;
+  }
+  .rbtn .rbtn-emoji { font-size: 1.5rem; display: block; margin-bottom: 2px; }
+  .rbtn-replay {
+    background: linear-gradient(135deg, #ffe0e8, #ffd0d8);
+    color: #8a3a50; border-color: #ffb0c0;
+  }
+  .rbtn-replay:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(255,150,170,0.3); animation: wiggle 0.35s ease; }
+  .rbtn-switch {
+    background: linear-gradient(135deg, #e0e8ff, #d0d8ff);
+    color: #4a50a0; border-color: #b0b8f0;
+  }
+  .rbtn-switch:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(150,160,240,0.3); animation: wiggle 0.35s ease; }
+  .rbtn-home {
+    background: linear-gradient(135deg, #ffe8d0, #ffd8c0);
+    color: #8a6030; border-color: #f0c090;
+  }
+  .rbtn-home:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(240,180,130,0.3); animation: wiggle 0.35s ease; }
+
+  /* ===== Confetti canvas ===== */
+  #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
+
+  @media (max-width: 500px) {
+    .card { padding: 24px 16px 20px; }
+    .home-title { font-size: 1.5rem; }
+    .result-score-big { font-size: 3rem; }
+    .breakdown-grid { grid-template-columns: repeat(2, 1fr); }
+    .result-btns { flex-direction: column; }
+    .rbtn { flex: none; }
+  }
+</style>
+</head>
+<body class="home-bg" id="body">
+
+<div class="container" id="app"></div>
+<canvas id="confetti-canvas" style="display:none;"></canvas>
+
+<script>
+// ============================================================
+// 30 SCENARIOS — all warm, intimate, NO work/study
+// Each: { id, tag, title, observe, feel, need, request }
+// Each element: { question, options: [{text, score: 3|2|1|0}] }
+// ============================================================
+const scenarioPool = [
+  // ── 闺蜜/朋友 (1-8) ──
+  {
+    id:1, tag:"闺蜜关系", title:"闺蜜又双叒叕迟到了",
+    observe:{ q:"闺蜜迟到后，哪句话最符合NVC「观察」？", opts:[
+      {t:"我们约的下午3点，现在3点40了，你刚刚到。",s:3},
+      {t:"你怎么又迟到了？我等了好久。",s:2},
+      {t:"你有没有时间观念啊？每次都让人等。",s:1},
+      {t:"你太不靠谱了，我对你真的无语。",s:0}]},
+    feel:{ q:"等待时你的真实「感受」是什么？", opts:[
+      {t:"我等了很久，感到有点失落和着急——因为我很期待见到你。",s:3},
+      {t:"我觉得你好像不太在意我们的约定。",s:2},
+      {t:"你让我很生气，白等这么久。",s:1},
+      {t:"随便吧，爱来不来，懒得说了。",s:0}]},
+    need:{ q:"你内心真正的「需要」是什么？", opts:[
+      {t:"我需要被认真对待，也希望我们在一起的时光被彼此珍视。",s:3},
+      {t:"我希望你以后准时一点，不要再迟到了。",s:2},
+      {t:"你至少应该提前说一声吧，这是基本礼貌。",s:1},
+      {t:"下次别约了，省得我心烦。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"下次如果不能按时到，提前给我发个消息好吗？这样我可以灵活安排。",s:3},
+      {t:"以后尽量别迟到行吗？等太久真的很烦。",s:2},
+      {t:"你能不能靠谱一点啊？每次都让人操心。",s:1},
+      {t:"算了，下次我不等你了，你自己看着办。",s:0}]}
+  },
+  {
+    id:2, tag:"闺蜜关系", title:"闺蜜把你的小秘密说出去了",
+    observe:{ q:"发现秘密被泄露后，哪句话是纯粹的「观察」？", opts:[
+      {t:"我跟你说过'不要告诉别人'的那件事，今天小李来问我了。",s:3},
+      {t:"你是不是把我的事跟别人说了？",s:2},
+      {t:"你嘴巴怎么这么大啊，什么事都往外说。",s:1},
+      {t:"我再也不相信你了。",s:0}]},
+    feel:{ q:"你最真实的「感受」是什么？", opts:[
+      {t:"我感到很受伤和失望，因为那件事对我来说很私密。",s:3},
+      {t:"我觉得你根本不把我的隐私当回事。",s:2},
+      {t:"你让我心寒了。",s:1},
+      {t:"算我看错你了，绝交吧。",s:0}]},
+    need:{ q:"你内心最核心的「需要」是什么？", opts:[
+      {t:"我需要被尊重，尤其是我明确说过'保密'的事情。",s:3},
+      {t:"我希望你能管住自己的嘴。",s:2},
+      {t:"你至少应该先问问我能不能说。",s:1},
+      {t:"以后什么事都不跟你讲了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"以后如果我跟你说'这个别告诉别人'，可以帮我守住吗？如果不太确定能不能说，先问我一下？",s:3},
+      {t:"以后别到处说我的事了好吗？",s:2},
+      {t:"你能不能学着保守秘密？",s:1},
+      {t:"我以后什么都不会跟你说了。",s:0}]}
+  },
+  {
+    id:3, tag:"闺蜜关系", title:"闺蜜借了你的限量款包包一直没还",
+    observe:{ q:"想提醒她还包时，最符合「观察」的说法是？", opts:[
+      {t:"上个月15号我把那个白色包包借给你，现在过去三周了，还没回到我手里。",s:3},
+      {t:"你是不是忘了还我东西？",s:2},
+      {t:"你借东西从来都不主动还。",s:1},
+      {t:"你是不是想占为己有啊？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我有点纠结和不舒服——因为想提醒你又怕你多想。",s:3},
+      {t:"我觉得你不太爱惜我的东西。",s:2},
+      {t:"你让我很为难，不知道怎么开口。",s:1},
+      {t:"算了不要了，就当送你了。",s:0}]},
+    need:{ q:"你真正的「需要」是什么？", opts:[
+      {t:"我需要自己的东西被爱惜，也希望我们之间的信任不被这些小事影响。",s:3},
+      {t:"我希望你用完东西能主动还。",s:2},
+      {t:"你至少应该跟我说一声什么时候还。",s:1},
+      {t:"以后再也不借东西给你了。",s:0}]},
+    request:{ q:"最符合NVC精神的「请求」是？", opts:[
+      {t:"如果方便的话，这周能把包包还我吗？我下周有个场合想用。如果你还喜欢可以再借~",s:3},
+      {t:"你快点把包还我，我要用。",s:2},
+      {t:"你能不能有点自觉性？借了东西要还。",s:1},
+      {t:"不用还了，我也不想再为这种事烦心。",s:0}]}
+  },
+  {
+    id:4, tag:"闺蜜关系", title:"闺蜜在聚会上拿你开了一个让你不舒服的玩笑",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"刚才吃饭时你当着一桌人的面说了我上次分手的事，大家笑了。",s:3},
+      {t:"你为什么要拿我的私事开玩笑？",s:2},
+      {t:"你太不考虑我的感受了。",s:1},
+      {t:"你每次都这样，拿我当笑料。",s:0}]},
+    feel:{ q:"你的真实「感受」是什么？", opts:[
+      {t:"我当时感到很难堪和尴尬，也有点伤心——因为那件事对我来说还没有完全过去。",s:3},
+      {t:"我觉得你太不尊重我了。",s:2},
+      {t:"你让我在那么多人面前丢脸了。",s:1},
+      {t:"无所谓了，反正你也不在乎。",s:0}]},
+    need:{ q:"你真正的「需要」是什么？", opts:[
+      {t:"我需要被尊重和呵护，尤其是关于我还比较脆弱的话题。",s:3},
+      {t:"希望你以后开玩笑注意分寸。",s:2},
+      {t:"你不能拿别人的痛处来逗大家开心。",s:1},
+      {t:"行吧，以后聚会我不去了。",s:0}]},
+    request:{ q:"最符合NVC的「请求」是？", opts:[
+      {t:"关于我分手的事我还没完全消化，下次如果说到这个话题，可以帮我绕开吗？我会很感激。",s:3},
+      {t:"以后别拿我的私事开玩笑了行吗？",s:2},
+      {t:"你能不能有点情商？",s:1},
+      {t:"算了当我没说，你们开心就好。",s:0}]}
+  },
+  {
+    id:5, tag:"闺蜜关系", title:"闺蜜三天没回你消息",
+    observe:{ q:"当你终于联系上时，哪句是纯粹的「观察」？", opts:[
+      {t:"我周二和周四给你发了消息，到现在周六了还没有收到回复。",s:3},
+      {t:"你怎么这么久不理我？",s:2},
+      {t:"你是不是在躲着我？",s:1},
+      {t:"你根本不在乎我这个朋友。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"这几天我有些担心和焦虑，也有点难过——因为不知道发生了什么事。",s:3},
+      {t:"我觉得我们的友谊好像变了。",s:2},
+      {t:"你让我很难受。",s:1},
+      {t:"不回就不回吧，我也不想问了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要和好朋友之间保持联系和连接，也想确认你是不是一切安好。",s:3},
+      {t:"我希望你能及时回消息。",s:2},
+      {t:"你至少应该说一声'在忙'吧。",s:1},
+      {t:"算了，既然你不在乎，我也不在乎了。",s:0}]},
+    request:{ q:"最符合NVC的「请求」是？", opts:[
+      {t:"如果你忙或者不方便回消息，发个表情包也行——我就知道你还活着，哈哈。你觉得怎么样？",s:3},
+      {t:"以后能不能别好几天不回消息？",s:2},
+      {t:"你回消息能不能积极一点？",s:1},
+      {t:"随便吧，你爱回不回。",s:0}]}
+  },
+  {
+    id:6, tag:"闺蜜关系", title:"闺蜜在你吐槽时说'你想太多了'",
+    observe:{ q:"哪句话最接近纯粹的「观察」？", opts:[
+      {t:"我跟你说了我最近的烦恼，你回了一句'你想太多了'。",s:3},
+      {t:"你怎么每次都这样敷衍我？",s:2},
+      {t:"你根本不想听我说话。",s:1},
+      {t:"你真是一点都不会安慰人。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到有点受伤和孤单——因为我很需要被倾听，但好像被轻轻推开了。",s:3},
+      {t:"我觉得你不理解我。",s:2},
+      {t:"你让我觉得自己很矫情。",s:1},
+      {t:"算了，跟你说也没用。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被认真地倾听和接纳——不需要解决方案，只是被听见。",s:3},
+      {t:"我希望你能认真听我说话，不要随便下结论。",s:2},
+      {t:"你应该站在我这边而不是否定我。",s:1},
+      {t:"以后不跟你吐槽了。",s:0}]},
+    request:{ q:"最符合NVC的「请求」是？", opts:[
+      {t:"下次我吐槽的时候，如果暂时不知道说什么，可不可以只是说'嗯我在听'或者抱抱我？这样就够了。",s:3},
+      {t:"以后别再说'你想太多了'这句话。",s:2},
+      {t:"你能不能学着好好安慰人？",s:1},
+      {t:"算了，我以后找别人说吧。",s:0}]}
+  },
+  {
+    id:7, tag:"闺蜜关系", title:"闺蜜把你的丑照发到了朋友圈",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我看到你朋友圈发了一张我们上周的合照，那张照片我闭眼了。",s:3},
+      {t:"你怎么能把我的丑照发出去？",s:2},
+      {t:"你发之前为什么不问问我？",s:1},
+      {t:"你故意发我丑照让我难堪！",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我看到照片时感到有点不舒服和尴尬，因为我比较在意自己在朋友圈的形象。",s:3},
+      {t:"我觉得你太不考虑我的感受了。",s:2},
+      {t:"你让我在大家面前出丑了。",s:1},
+      {t:"我以后再也不敢跟你拍照了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要对自己照片的自主权——发之前能被问一下会很安心。",s:3},
+      {t:"希望你在发我的照片之前先给我看一下。",s:2},
+      {t:"你不能随便发别人的照片啊。",s:1},
+      {t:"算了，删好友吧。",s:0}]},
+    request:{ q:"最符合NVC的「请求」是？", opts:[
+      {t:"以后发我的照片之前，可以先发给我看一眼吗？基本上都会同意的，只是想让心里有数。",s:3},
+      {t:"以后别乱发我照片了。",s:2},
+      {t:"你发照片能不能走点心？",s:1},
+      {t:"删掉，立刻删掉！",s:0}]}
+  },
+  {
+    id:8, tag:"闺蜜关系", title:"闺蜜约好一起旅行，临出发前放鸽子",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我们三个月前订的行程，酒店和机票都订好了。出发前两个小时你发消息说来不了了。",s:3},
+      {t:"你怎么能在出发前临时说不去？",s:2},
+      {t:"你太不负责任了，计划全乱了。",s:1},
+      {t:"跟你旅行太不靠谱了，以后别约了。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到非常失落和难过，也有点焦虑——因为突然要独自面对这趟行程。",s:3},
+      {t:"我觉得被坑了，计划全泡汤了。",s:2},
+      {t:"你让我太失望了，浪费了我的期待。",s:1},
+      {t:"随便吧，我自己去，无所谓了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要承诺被认真对待，也需要出行中有伴侣的安全感。",s:3},
+      {t:"我希望你至少提前几天说，让我有准备。",s:2},
+      {t:"你不能这样临时变卦啊。",s:1},
+      {t:"以后旅行不约你了，太累了。",s:0}]},
+    request:{ q:"最符合NVC的「请求」是？", opts:[
+      {t:"下次如果一起出行，你方便提前一周跟我确认吗？这样如果有变化我也好调整。",s:3},
+      {t:"以后别临时放鸽子了行吧？",s:2},
+      {t:"你以后能不能靠谱一点？",s:1},
+      {t:"以后各玩各的吧。",s:0}]}
+  },
+
+  // ── 爱人/伴侣 (9-18) ──
+  {
+    id:9, tag:"爱人关系", title:"伴侣又忘了关客厅的灯",
+    observe:{ q:"哪句话最符合NVC「观察」？", opts:[
+      {t:"我看到客厅的灯从昨天晚上到现在一直亮着，现在是第二天中午了。",s:3},
+      {t:"你怎么又忘关灯了？",s:2},
+      {t:"你太浪费电了，一点都不上心。",s:1},
+      {t:"跟你说多少次了都记不住，你是不是故意的？",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有点小烦躁，因为电费确实不便宜，而且我觉得这是我们共同的事。",s:3},
+      {t:"我觉得你太不注意生活细节了。",s:2},
+      {t:"你让我很恼火，每次都要我来操心。",s:1},
+      {t:"我懒得说了，以后我也不关了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要我们一起维护这个家——小事上互相补位，而不是一个人在操心。",s:3},
+      {t:"希望你能养成随手关灯的习惯。",s:2},
+      {t:"你不能总是依赖我来收拾这些。",s:1},
+      {t:"随便吧，反正你也不在乎。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"晚上你通常是最后一个离开客厅的，离开前能顺手关一下灯吗？我也可以贴个小便条提醒我们一起注意。",s:3},
+      {t:"以后记得关灯！",s:2},
+      {t:"你能不能长点记性？",s:1},
+      {t:"行了我来关，指望不上你。",s:0}]}
+  },
+  {
+    id:10, tag:"爱人关系", title:"伴侣在你难过的时候说了'这有什么好哭的'",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我刚才在哭，你说了一句'这有什么好哭的'。",s:3},
+      {t:"你怎么能在我哭的时候说这种话？",s:2},
+      {t:"你太冷漠了，一点都不会安慰人。",s:1},
+      {t:"你根本不爱我。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我听到这句话时感到更加难过和孤单，好像我的感受不被允许存在。",s:3},
+      {t:"我觉得你完全不懂得共情。",s:2},
+      {t:"你让我心都凉了。",s:1},
+      {t:"行吧，以后我不在你面前哭了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被理解和接纳——即使你不太明白我为什么难过，也希望被温柔对待。",s:3},
+      {t:"我希望你能在我难过的时候安慰我。",s:2},
+      {t:"你不应该否定别人的感受。",s:1},
+      {t:"以后难过我自己消化就行了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"以后我哭的时候，如果不知道该说什么，抱抱我就好——真的，比任何话都管用。",s:3},
+      {t:"以后别再说这种话了，很伤人。",s:2},
+      {t:"你学着好好说话行不行？",s:1},
+      {t:"算了，我以后不对你表达情绪了。",s:0}]}
+  },
+  {
+    id:11, tag:"爱人关系", title:"伴侣答应洗碗，水池里还是堆满了",
+    observe:{ q:"哪句话最符合NVC「观察」？", opts:[
+      {t:"早上你说今天会洗碗，现在晚上10点了，水池里还有早上的碗筷。",s:3},
+      {t:"你不是说今天洗碗的吗？",s:2},
+      {t:"你又没洗，每次都这样。",s:1},
+      {t:"你说话跟放屁一样。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有点失望和疲惫——因为我也累了一天，看到没洗的碗觉得压力更大了。",s:3},
+      {t:"我觉得你说话不算话。",s:2},
+      {t:"你让我很生气。",s:1},
+      {t:"我不管了，脏就脏吧。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要我们可以互相依靠——家里的事一起分担，而不是我一个人扛。",s:3},
+      {t:"希望你答应的事情能做到。",s:2},
+      {t:"你不能这么懒啊。",s:1},
+      {t:"行吧以后家务都别做了，一起摆烂。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"如果你今天太累了不想洗，跟我说一声就好——我来洗或者留到明天都行。只是想知道你的状态。",s:3},
+      {t:"你快点去把碗洗了。",s:2},
+      {t:"你能不能有点责任心？",s:1},
+      {t:"以后不用你洗了，我自己来。",s:0}]}
+  },
+  {
+    id:12, tag:"爱人关系", title:"伴侣把你精心准备的礼物转送给了别人",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我去年生日你送我的那条围巾，今天在小王脖子上看到了。",s:3},
+      {t:"你怎么把我送你的礼物给别人了？",s:2},
+      {t:"你是不是嫌弃我送的东西？",s:1},
+      {t:"你太不珍惜我的心意了。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到很伤心和失落，也有点困惑——因为那是我用心挑选的。",s:3},
+      {t:"我觉得自己的心意被当成了垃圾。",s:2},
+      {t:"你让我太失望了。",s:1},
+      {t:"以后不送你礼物了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要我表达的爱被珍视——不一定留着东西，但希望懂得那份心意。",s:3},
+      {t:"希望你尊重我送的礼物。",s:2},
+      {t:"你至少应该先问问我。",s:1},
+      {t:"行吧，反正你也不在乎我的感受。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"下次如果你想处理我送的东西，可以提前跟我说一声吗？我不会阻止，只是想知道一下。",s:3},
+      {t:"以后别把我送的东西给别人了。",s:2},
+      {t:"你能不能珍惜一下别人的心意？",s:1},
+      {t:"我以后不会再送你任何东西了。",s:0}]}
+  },
+  {
+    id:13, tag:"爱人关系", title:"伴侣没跟你商量就买了一个很贵的电子产品",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"家里多了一台新的游戏机，价格标签还在，5999元。我们之前没有讨论过。",s:3},
+      {t:"你怎么又乱花钱了？",s:2},
+      {t:"你太不顾家了，想买什么就买什么。",s:1},
+      {t:"我们的钱是大风吹来的吗？",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有些不安和焦虑——因为我们在为某个共同目标存钱，突然多了这么大一笔开销让我担心。",s:3},
+      {t:"我觉得你不尊重我们的约定。",s:2},
+      {t:"你让我很生气，太任性了。",s:1},
+      {t:"随便吧，我也不存钱了，大家一起花。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要大额消费前能一起商量——不是因为要批准，而是因为我们是队友。",s:3},
+      {t:"我希望你能在花钱之前跟我打个招呼。",s:2},
+      {t:"你不能想一出是一出啊。",s:1},
+      {t:"行吧以后各花各的。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"以后超过2000块的东西我们商量一下再买好吗？不一定是'不买'，只是想知道彼此的想法。",s:3},
+      {t:"以后花钱之前先跟我说一声。",s:2},
+      {t:"你能不能成熟一点？",s:1},
+      {t:"以后你的钱我不管了。",s:0}]}
+  },
+  {
+    id:14, tag:"爱人关系", title:"伴侣在朋友面前吐槽你的糗事",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"刚才吃饭时你讲了上次我在家摔跤的事，大家都笑了。",s:3},
+      {t:"你怎么能在朋友面前揭我短？",s:2},
+      {t:"你太不给我面子了。",s:1},
+      {t:"你就是想让我出丑。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到有点尴尬和不舒服——那个事我自己都觉得好笑，但在外人面前被说出来还是不太一样。",s:3},
+      {t:"我觉得你太不在乎我的感受了。",s:2},
+      {t:"你让我在朋友面前很丢脸。",s:1},
+      {t:"以后聚会我不去了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要在外面被伴侣维护和尊重——私下的糗事是两个人的亲密，不是公开的笑话。",s:3},
+      {t:"希望你以后在外面给我留点面子。",s:2},
+      {t:"你不能拿我来活跃气氛啊。",s:1},
+      {t:"行吧，你开心就好。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"以后如果要说我的糗事，先说我们自己的糗事可以吗？或者你先问问我想不想被大家知道。",s:3},
+      {t:"以后别在别人面前说我的事了。",s:2},
+      {t:"你能不能学会尊重人？",s:1},
+      {t:"算了，大家开心就好。",s:0}]}
+  },
+  {
+    id:15, tag:"爱人关系", title:"伴侣在你感冒时只顾着打游戏",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我从下午开始发烧，躺了四个小时。这段时间你一直在书房打游戏。",s:3},
+      {t:"你都不关心我一下吗？",s:2},
+      {t:"游戏比我还重要是吧？",s:1},
+      {t:"你根本就不在乎我的死活。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到有点孤单和难过——生病的时候特别希望有人在身边。",s:3},
+      {t:"我觉得我还没有游戏重要。",s:2},
+      {t:"你让我心寒了。",s:1},
+      {t:"行吧，下次你生病我也不管你。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被关心和照顾——尤其是在身体不舒服、脆弱的时候。",s:3},
+      {t:"希望你能在我生病时多陪陪我。",s:2},
+      {t:"你应该放下游戏来照顾我。",s:1},
+      {t:"以后我自己的事自己处理。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"我现在特别难受，能帮我倒杯热水然后陪我一会吗？就十分钟也行。",s:3},
+      {t:"你能不能别打游戏了来照顾我？",s:2},
+      {t:"游戏比我重要呗？",s:1},
+      {t:"不用你了，我自己来。",s:0}]}
+  },
+  {
+    id:16, tag:"爱人关系", title:"伴侣在你讲重要事情的时候看手机",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我刚才在说今天发生的一件很重要的事，你一直在刷手机，回了一句'嗯'。",s:3},
+      {t:"你有没有在听我说话？",s:2},
+      {t:"你根本不在乎我说了什么。",s:1},
+      {t:"手机是你亲爹亲妈吗？",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到被忽视的失落和孤单——因为那件事对我很重要，我很想跟你分享。",s:3},
+      {t:"我觉得你一点都不尊重我。",s:2},
+      {t:"你让我不想说话了，反正说了也白说。",s:1},
+      {t:"我以后再也不想跟你分享了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被全神贯注地倾听——尤其是分享重要事情的时候，想要你的注意力在我身上。",s:3},
+      {t:"希望你能放下手机听我说话。",s:2},
+      {t:"你至少应该看着我说话。",s:1},
+      {t:"算了，我在你心里不如手机。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"我想跟你说一件对我很重要的事，大概需要十分钟。你可以把手机先放下，听我说完吗？之后你再忙。",s:3},
+      {t:"你能不能别看手机了？",s:2},
+      {t:"手机放下来！我说话呢！",s:1},
+      {t:"不说就不说，谁稀罕。",s:0}]}
+  },
+  {
+    id:17, tag:"爱人关系", title:"伴侣说你'又怎么了'",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我回家时脸色不太好，你看到我之后问了一句'又怎么了'。",s:3},
+      {t:"你这是什么语气啊？",s:2},
+      {t:"你嫌我烦了是吧？",s:1},
+      {t:"你说话也太难听了。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我听到这个'又'字时感到有点受伤，好像我的情绪变成了你的负担。",s:3},
+      {t:"我觉得你很嫌弃我。",s:2},
+      {t:"你让我觉得自己很烦人。",s:1},
+      {t:"不说就不说，以后不想跟你说话了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被包容和接纳——即使情绪低落的时候，也希望被温柔地询问而不是嫌弃。",s:3},
+      {t:"希望你能好好说话，不要用'又'这种词。",s:2},
+      {t:"你应该包容我的情绪。",s:1},
+      {t:"行吧，我以后有情绪自己消化。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"下次如果你觉得我情绪低落，问'今天是不是不太开心'会比'又怎么了'让我好受很多。可以试试吗？",s:3},
+      {t:"以后别再说'又怎么了'。",s:2},
+      {t:"你能不能说话走点心？",s:1},
+      {t:"算了，反正你也不想听。",s:0}]}
+  },
+  {
+    id:18, tag:"爱人关系", title:"伴侣忘记了你俩的纪念日",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"今天是5月20号，是我们在一起的三周年。你现在正在打游戏，没有提起这件事。",s:3},
+      {t:"你是不是忘了今天是什么日子？",s:2},
+      {t:"你根本不在乎我们的感情。",s:1},
+      {t:"我在你心里什么都不是。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到很失落和难过，因为这一天对我来说很特别，我期待我们能一起庆祝。",s:3},
+      {t:"我觉得你一点都不浪漫。",s:2},
+      {t:"你让我太伤心了。",s:1},
+      {t:"算了，就当没这个日子。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被重视和珍惜——纪念日对我来说是我们感情的仪式，希望这份仪式感是双向的。",s:3},
+      {t:"希望你能记住对我们重要的日子。",s:2},
+      {t:"你至少应该设个提醒吧。",s:1},
+      {t:"以后我也忘了，大家都别过了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"今天是我们三周年，我们去那家常去的餐厅吃个饭好吗？就我们俩，不谈别的。",s:3},
+      {t:"你快点想一下今天是什么日子。",s:2},
+      {t:"你能不能上点心？",s:1},
+      {t:"没什么，忘了就忘了吧。",s:0}]}
+  },
+
+  // ── 家庭/父母 (19-25) ──
+  {
+    id:19, tag:"家庭关系", title:"妈妈又打电话催你结婚",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"妈妈，这个月你打了四次电话，每次都提到'什么时候结婚'这个话题。",s:3},
+      {t:"你怎么又催了？",s:2},
+      {t:"你每次打电话都是这个话题，烦不烦。",s:1},
+      {t:"你能不能别管我的事？",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我每次听到这个话题都觉得有些压力和焦虑，因为我还没有准备好。",s:3},
+      {t:"我觉得你不尊重我的人生节奏。",s:2},
+      {t:"你让我很烦。",s:1},
+      {t:"以后再打电话我就不接了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被信任——相信我能过好自己的人生，也希望我们的对话是关心而非压力。",s:3},
+      {t:"希望你能少说这个话题。",s:2},
+      {t:"你不能把焦虑转嫁给我啊。",s:1},
+      {t:"你再催我就搬走了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"妈妈，下次打电话的时候我们可以聊聊你最近看的好剧或者去哪玩了——关于结婚的事等我有了消息第一个告诉你，好吗？",s:3},
+      {t:"以后别催了，我自有安排。",s:2},
+      {t:"你能不能别老说这个了？",s:1},
+      {t:"我不想说这个了，挂了啊。",s:0}]}
+  },
+  {
+    id:20, tag:"家庭关系", title:"爸爸不理解你为什么换工作",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"爸爸，我上个月从银行辞职，现在在一家小公司做设计。你刚才说'好好的铁饭碗不要了'。",s:3},
+      {t:"你怎么总是不理解我？",s:2},
+      {t:"你眼里只有稳定稳定稳定。",s:1},
+      {t:"你根本不懂这个时代。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我听到'铁饭碗'时有点失落和难过，因为我很想让你为我现在的选择感到骄傲。",s:3},
+      {t:"我觉得你不支持我。",s:2},
+      {t:"你让我很沮丧。",s:1},
+      {t:"算了，我不解释了，随你怎么想。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被理解和认可——希望你看得到我做出这个选择的勇气和热情，而不是只看风险。",s:3},
+      {t:"希望你能试着理解我的选择。",s:2},
+      {t:"你至少应该尊重我的决定。",s:1},
+      {t:"反正你也不懂，不说了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"爸爸，下次我带你去我公司看看好吗？让你看看我在做什么，你可能会喜欢的。",s:3},
+      {t:"你以后别再说'铁饭碗'了。",s:2},
+      {t:"你能不能与时俱进一点？",s:1},
+      {t:"不跟你说了，说了也白说。",s:0}]}
+  },
+  {
+    id:21, tag:"家庭关系", title:"过年亲戚围着你问工资多少",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"二姨刚才问我'一个月挣多少钱'，三叔也跟着问'年终奖多不多'。",s:3},
+      {t:"你们能不能别老问这种问题？",s:2},
+      {t:"你们就是来攀比的吧。",s:1},
+      {t:"关你什么事啊，烦不烦。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到不太舒服和紧张，因为收入是比较私人的话题，而且我也还在努力中。",s:3},
+      {t:"我觉得你们很不尊重隐私。",s:2},
+      {t:"你们让我很尴尬。",s:1},
+      {t:"明年过年不回来了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要私人边界被尊重——过年相聚是开心的，不希望变成互相打探的场合。",s:3},
+      {t:"希望大家聊点别的话题。",s:2},
+      {t:"你们不能老盯着别人隐私问啊。",s:1},
+      {t:"以后不参加这种聚会了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"二姨，工资的事咱先放一放——对了你上次旅游的照片给我看看呗，听说特别美！",s:3},
+      {t:"能不能别问工资了？",s:2},
+      {t:"这是我的私事好吗？",s:1},
+      {t:"不吃了，我先走了。",s:0}]}
+  },
+  {
+    id:22, tag:"家庭关系", title:"家人未经你允许进了你的房间",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我出门的时候房间门是关着的，回来发现门开着，桌上的东西位置变了。",s:3},
+      {t:"你是不是进我房间了？",s:2},
+      {t:"你怎么又乱翻我东西？",s:1},
+      {t:"你太不尊重我了！",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我感到不舒服和有些生气——因为房间是我唯一完全属于自己的空间。",s:3},
+      {t:"我觉得隐私被侵犯了。",s:2},
+      {t:"你让我很不爽。",s:1},
+      {t:"行吧，我锁门了以后。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要属于自己的空间和边界——在家也应该有被尊重的私人领域。",s:3},
+      {t:"希望进我房间之前先敲门。",s:2},
+      {t:"你不能随便进别人的房间啊。",s:1},
+      {t:"以后我把门反锁。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"以后进我房间之前敲个门好吗？如果需要找什么东西我回来帮你找。这样我会觉得被尊重。",s:3},
+      {t:"以后别进我房间了。",s:2},
+      {t:"你搞清楚这是谁的房间。",s:1},
+      {t:"以后我住外面去。",s:0}]}
+  },
+  {
+    id:23, tag:"家庭关系", title:"妈妈总拿你和别人家孩子比较",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"刚才你说'你看人家小王都买第二套房了'，这是这个月第三次你提到别人家孩子。",s:3},
+      {t:"你怎么老拿我跟别人比？",s:2},
+      {t:"你眼里只有别人家孩子。",s:1},
+      {t:"那你认小王当你孩子好了。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我每次被比较都感到有些受伤和自卑，好像不管我做什么都不够好。",s:3},
+      {t:"我觉得你永远对我不满意。",s:2},
+      {t:"你让我觉得压力好大。",s:1},
+      {t:"算了，我这辈子就这样了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要被你看见——不是跟别人比，而是看见我已经很努力了，我需要的是鼓励。",s:3},
+      {t:"希望你能看到我的优点。",s:2},
+      {t:"你不能总是对我不满意。",s:1},
+      {t:"行吧反正我怎么都不够好。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"妈妈，下次如果你想鼓励我，直接说'妈妈觉得你已经很棒了'——这句话比提小王厉害一百倍，真的。",s:3},
+      {t:"以后别拿我跟别人比较了。",s:2},
+      {t:"你能不能别说了。",s:1},
+      {t:"算了我不想聊了。",s:0}]}
+  },
+  {
+    id:24, tag:"家庭关系", title:"父母对你的养宠决定指指点点",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我养了一只猫。你们刚才说'养这个干什么，又花钱又掉毛'。",s:3},
+      {t:"你们为什么总是看不惯我做的事？",s:2},
+      {t:"你们管得太宽了吧。",s:1},
+      {t:"你们就是不相信我的判断。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有点沮丧和无奈，因为这只猫给了我很多陪伴和快乐，很希望你们也能理解。",s:3},
+      {t:"我觉得你们不尊重我的生活方式。",s:2},
+      {t:"你们让我觉得做什么都是错的。",s:1},
+      {t:"算了反正你们也不懂。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要自己的生活方式被接纳——就算不完全理解，也希望得到尊重和祝福。",s:3},
+      {t:"希望你们少说几句。",s:2},
+      {t:"你们不能什么都管啊。",s:1},
+      {t:"行吧我就养了，随便你们怎么说。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"妈，下次你们来可以跟它玩一会——它真的很治愈。掉毛我会勤打扫的，你们放心。",s:3},
+      {t:"以后别再说我的猫了。",s:2},
+      {t:"你们能不能别管我的事了？",s:1},
+      {t:"算了，你们不喜欢就别来了。",s:0}]}
+  },
+  {
+    id:25, tag:"家庭关系", title:"家人突然来你家没提前打招呼",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"爸妈，你们现在在我家门口。今天早上和昨天都没有跟我说过要来。",s:3},
+      {t:"你们怎么突然来了？",s:2},
+      {t:"你们每次都这样，说来就来。",s:1},
+      {t:"你们考虑过我的感受吗？",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有点意外和紧张，因为家里没有收拾，而且我今天本来有其他安排。",s:3},
+      {t:"我觉得不被尊重。",s:2},
+      {t:"你们让我手忙脚乱的。",s:1},
+      {t:"早知道我就不在家了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要一个提前的心理准备——哪怕提前一小时说，我都能以最好的状态迎接你们。",s:3},
+      {t:"希望你们来之前跟我说一声。",s:2},
+      {t:"你们不能总是突然袭击啊。",s:1},
+      {t:"以后来了我也不开门。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"爸妈，下次来之前提前半天跟我说好吗？我可以准备好吃的，把家收拾干净，以最好的状态迎接你们。",s:3},
+      {t:"以后来之前打个招呼。",s:2},
+      {t:"你们能不能考虑一下别人？",s:1},
+      {t:"下次别来了。",s:0}]}
+  },
+
+  // ── 亲子 (26-30) ──
+  {
+    id:26, tag:"亲子关系", title:"孩子把刚收拾好的房间又弄乱了",
+    observe:{ q:"哪句话最符合NVC「观察」？", opts:[
+      {t:"我两小时前收拾了你的房间，现在地上有玩具、绘本和几件衣服。",s:3},
+      {t:"你怎么又把房间弄成这样？",s:2},
+      {t:"你从来不珍惜别人的劳动。",s:1},
+      {t:"你就像个小猪一样！",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"妈妈/爸爸有点累，也有点沮丧——因为刚刚花了很多时间收拾。",s:3},
+      {t:"我觉得你太不听话了。",s:2},
+      {t:"你让我很生气。",s:1},
+      {t:"我不想管你了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要我们一起保持整洁——不是妈妈/爸爸一个人收拾，是大家一起爱护我们的家。",s:3},
+      {t:"希望你能保持房间干净。",s:2},
+      {t:"你不能把别人的劳动不当回事。",s:1},
+      {t:"以后你自己收拾，我不管了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"我们一起把玩具收进箱子里好不好？你收绘本我收玩具，看谁快~",s:3},
+      {t:"快点把房间收拾好。",s:2},
+      {t:"你再不收拾我就扔掉了。",s:1},
+      {t:"算了我不管了，你爱怎样怎样。",s:0}]}
+  },
+  {
+    id:27, tag:"亲子关系", title:"孩子不愿意跟你分享学校的事",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我刚才问你'今天学校有什么好玩的事吗'，你说'没有'，然后继续看iPad。这是这周的第三次了。",s:3},
+      {t:"你怎么什么都不跟我说？",s:2},
+      {t:"你是不是在学校遇到什么事了？",s:1},
+      {t:"你变了，以前什么都会跟妈妈/爸爸说的。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有点担心，也有点失落——因为以前你什么都跟我说，现在好像有距离了。",s:3},
+      {t:"我觉得我们的关系变远了。",s:2},
+      {t:"你让我很焦虑。",s:1},
+      {t:"算了，你不想说我就不问了。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要和我的孩子保持连接——想知道你开不开心，有没有需要我们帮忙的地方。",s:3},
+      {t:"希望你能跟我说说话。",s:2},
+      {t:"你的世界不应该对我关闭。",s:1},
+      {t:"行吧，随你，我不管了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"不管什么时候你想说，妈妈/爸爸都在——开心的、不开心的都可以。不想说也没关系，周末我们去你喜欢的披萨店？",s:3},
+      {t:"跟我说说学校的事呗。",s:2},
+      {t:"你到底怎么了？告诉我。",s:1},
+      {t:"不说就不说，我也不问了。",s:0}]}
+  },
+  {
+    id:28, tag:"亲子关系", title:"孩子沉迷iPad不肯写作业",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"从放学回来到现在一个半小时了，你一直在看iPad。作业本还在书包里没有拿出来。",s:3},
+      {t:"你怎么又在玩iPad？",s:2},
+      {t:"你一点都不自觉。",s:1},
+      {t:"你眼睛要瞎了你知不知道！",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有点着急和担忧——因为作业拖太晚会影响休息，而且我也担心你的眼睛。",s:3},
+      {t:"我觉得你太不自觉了。",s:2},
+      {t:"你让我很烦躁。",s:1},
+      {t:"随便你吧，你爱写不写。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要你有健康的作息——也想让你学会安排好自己的时间，这对你以后很重要。",s:3},
+      {t:"希望你能先做完作业再玩。",s:2},
+      {t:"你不能只顾着玩不学习啊。",s:1},
+      {t:"行吧，作业不写明天被老师批评别怪我。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"iPad先放妈妈/爸爸这里保管，你写完作业就还给你。如果你能在一小时内写完，我们还可以一起看一集你喜欢的动画。怎么样？",s:3},
+      {t:"快把iPad放下写作业！",s:2},
+      {t:"你再玩我就没收了。",s:1},
+      {t:"我不管你了。",s:0}]}
+  },
+  {
+    id:29, tag:"亲子关系", title:"孩子在超市哭着要买玩具",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我们现在在超市玩具区，你抱着这个恐龙玩具在哭，说'妈妈/爸爸我要这个'。",s:3},
+      {t:"你怎么又在外面耍赖？",s:2},
+      {t:"你每次都这样，看到什么都要买。",s:1},
+      {t:"你太不听话了，丢死人了。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我有点尴尬也有点着急——旁边很多人看着，但我也不想粗暴地对待你。",s:3},
+      {t:"我觉得你太任性了。",s:2},
+      {t:"你让我很丢脸。",s:1},
+      {t:"不买了，回家！",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要你学会接受'不行'——这很难，但对你的成长很重要。同时也需要我们能互相理解。",s:3},
+      {t:"希望你能懂事一点。",s:2},
+      {t:"你不能想要什么就要什么。",s:1},
+      {t:"以后不带你来超市了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"我知道你很想要这只恐龙。我们把它记在'愿望清单'上，等你生日的时候好吗？来，跟妈妈/爸爸一起深呼吸一下。",s:3},
+      {t:"别哭了，起来走了。",s:2},
+      {t:"你再哭我就不管你了。",s:1},
+      {t:"以后别想让我带你出来。",s:0}]}
+  },
+  {
+    id:30, tag:"亲子关系", title:"孩子用蜡笔在客厅墙上画了画",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"客厅那面白墙上现在有一幅用红色和蓝色蜡笔画的小房子和太阳。",s:3},
+      {t:"你怎么能在墙上乱画？",s:2},
+      {t:"你把墙毁了你知道吗！",s:1},
+      {t:"你太淘气了，我快被你气疯了。",s:0}]},
+    feel:{ q:"你的真实「感受」是？", opts:[
+      {t:"我又好气又好笑——气的是墙确实难清理，笑的是那幅画其实画得挺可爱的。",s:3},
+      {t:"我觉得你太调皮了。",s:2},
+      {t:"你让我血压飙升。",s:1},
+      {t:"你完了，看我不收拾你。",s:0}]},
+    need:{ q:"你的核心「需要」是？", opts:[
+      {t:"我需要家里整洁，但也希望保护你的创造力和表达欲——我们需要找到一个两全其美的方式。",s:3},
+      {t:"希望你以后只在纸上画画。",s:2},
+      {t:"你不能到处乱画啊。",s:1},
+      {t:"以后蜡笔我全扔了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"这幅画好可爱！不过墙不是画画的地方哦——来，妈妈/爸爸给你一张大画纸，我们在这上面画。画完还可以贴起来给大家看！",s:3},
+      {t:"以后只能在纸上画画。",s:2},
+      {t:"你再在墙上画就别想用蜡笔了。",s:1},
+      {t:"蜡笔没收了。",s:0}]}
+  }
+  // ── 职场关系 (31-38) ──
+  ,{ id:31, tag:"职场关系", title:"同事在会上抢了你的功劳",
+    observe:{ q:"哪句话是最纯粹的NVC「观察」？", opts:[
+      {t:"刚才汇报时，我注意到你提到了我主导的那个数据分析结论，但没有说明是我完成的。",s:3},
+      {t:"你怎么把我的成果说成是你的了？",s:2},
+      {t:"你这个人怎么这么不诚实？",s:1},
+      {t:"你是不是故意的？想踩着我上位是吗？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到很惊讶和失望，因为我的贡献没有被认可。",s:3},
+      {t:"我觉得你太自私了，根本不尊重我。",s:2},
+      {t:"我很生气，你让我在领导面前很难堪。",s:1},
+      {t:"无所谓了，这个破地方不值得我认真。",s:0}]},
+    need:{ q:"你内心真正的「需要」是什么？", opts:[
+      {t:"我需要我的工作成果被看见和认可，也需要团队之间有透明的沟通。",s:3},
+      {t:"我希望你以后别再抢我的功劳了。",s:2},
+      {t:"你应该当面向我道歉，然后跟领导说清楚。",s:1},
+      {t:"以后我的数据你别想再碰一下。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"如果以后涉及我负责的部分，可以提前跟我对齐一下口径，或者汇报时提一下我的名字，可以吗？",s:3},
+      {t:"下次汇报前你能不能先跟我说一声？",s:2},
+      {t:"你下次再这样我就直接跟领导反映了。",s:1},
+      {t:"你爱怎样怎样吧，反正我记住了。",s:0}]}
+  },
+  { id:32, tag:"职场关系", title:"领导在群里公开批评你的工作",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我看到你在部门群里@我说这份报告数据有误，并且提出了三点具体问题。",s:3},
+      {t:"你当着全部门的面骂我，让我很没面子。",s:2},
+      {t:"你根本不会管理，就知道甩锅。",s:1},
+      {t:"你就是针对我。",s:0}]},
+    feel:{ q:"你最真实的「感受」是什么？", opts:[
+      {t:"我感到有些尴尬和紧张，因为被公开指出问题让我有点措手不及。",s:3},
+      {t:"我觉得你让我在同事面前抬不起头。",s:2},
+      {t:"我非常愤怒，有问题不能私下说吗？",s:1},
+      {t:"心凉了，这种领导不值得跟。",s:0}]},
+    need:{ q:"你内心最核心的「需要」是什么？", opts:[
+      {t:"我需要被尊重地给予反馈，也希望问题能以建设性的方式沟通。",s:3},
+      {t:"我希望你以后私下跟我沟通，别在群里公开说。",s:2},
+      {t:"你应该向我道歉，维护我的威信。",s:1},
+      {t:"我不想再跟你说话了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"下次如果我的工作有问题，可以私下先跟我沟通一下吗？这样我能更高效地改进，也不会影响团队氛围。",s:3},
+      {t:"以后别在群里说了，行吗？",s:2},
+      {t:"你能不能学学怎么当领导？",s:1},
+      {t:"随便吧，你爱怎么搞怎么搞。",s:0}]}
+  },
+  { id:33, tag:"职场关系", title:"下属对你的安排当面说'没时间'",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我刚才布置这个任务时，你说'我现在没时间做这个'。",s:3},
+      {t:"你这是什么态度？",s:2},
+      {t:"你最近工作状态很有问题。",s:1},
+      {t:"你是不是不想干了？",s:0}]},
+    feel:{ q:"你最真实的「感受」是什么？", opts:[
+      {t:"我感到有些困扰和担心，想知道是不是我分配的工作量不合理。",s:3},
+      {t:"我觉得你不尊重我作为领导的安排。",s:2},
+      {t:"我很恼火，你让我在其他人面前很难做。",s:1},
+      {t:"真是白眼狼。",s:0}]},
+    need:{ q:"你内心真正的「需要」是什么？", opts:[
+      {t:"我需要团队协作顺畅，也希望了解你的工作负荷是否已经饱和。",s:3},
+      {t:"我希望你以后能服从安排。",s:2},
+      {t:"你应该至少礼貌一点，别这么冲。",s:1},
+      {t:"不想干就滚蛋。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"可以跟我聊聊你目前手上有哪些任务吗？我们一起看看优先级怎么排，找到合适的方案。",s:3},
+      {t:"你把手上的活列一下给我看看。",s:2},
+      {t:"下次注意你的态度。",s:1},
+      {t:"你爱做不做。",s:0}]}
+  },
+  { id:34, tag:"职场关系", title:"同事总在午休时间大声打电话",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"这几天中午12点到1点，我注意到你在工位上打电话，声音我在隔壁工位能听得很清楚。",s:3},
+      {t:"你中午能不能小点声？",s:2},
+      {t:"你太吵了，根本不顾别人感受。",s:1},
+      {t:"你有没有公德心啊？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些疲惫和难以集中，因为我本来想在午休时间休息一下。",s:3},
+      {t:"我觉得你太自私了。",s:2},
+      {t:"你很烦人。",s:1},
+      {t:"我真想摔你手机。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要午休时间有一个安静的环境来恢复精力。",s:3},
+      {t:"我希望你能考虑一下别人的感受。",s:2},
+      {t:"你应该去外面打电话。",s:1},
+      {t:"你这种人就不适合在开放办公区工作。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"如果中午需要打电话，方便去楼下的休息区或者电话间吗？这样我可以好好休息一下，下午工作也更有效率。",s:3},
+      {t:"你中午去别的地方打电话行不行？",s:2},
+      {t:"你能不能注意点基本素质？",s:1},
+      {t:"你再这样就去找领导反映了。",s:0}]}
+  },
+  { id:35, tag:"职场关系", title:"同事转发邮件忘了删之前的负面评价",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"你转发邮件时，我注意到里面包含了上一封邮件里的原始批注。",s:3},
+      {t:"你是不是故意让我看见的？",s:2},
+      {t:"你做事太不仔细了。",s:1},
+      {t:"你就是在背后说我坏话。",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些受伤和意外，因为那些批注里有一些批评性的评价。",s:3},
+      {t:"我觉得你在背后搞小动作。",s:2},
+      {t:"我很生气，你居然在背后这么说我。",s:1},
+      {t:"我记住你了，走着瞧。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我希望工作中的反馈能直接、坦诚地沟通，而不是通过这种方式被我知道。",s:3},
+      {t:"我希望你以后做事仔细一点。",s:2},
+      {t:"你应该向我道歉。",s:1},
+      {t:"以后别想再跟我合作了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"如果对我的工作有什么建议，可以当面直接告诉我吗？这样我们能更高效地改进。",s:3},
+      {t:"以后发邮件之前看清楚再发。",s:2},
+      {t:"你最好跟领导解释清楚。",s:1},
+      {t:"没什么好说的了。",s:0}]}
+  },
+  { id:36, tag:"职场关系", title:"跨部门同事不配合你的需求",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我周三发了一个需求给你，到周五下班前还没有收到回复或进度更新。",s:3},
+      {t:"你怎么每次都拖拖拉拉的？",s:2},
+      {t:"你根本不在乎这个项目。",s:1},
+      {t:"你们部门的人就是这样不靠谱。",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有点焦虑和着急，因为这个需求的进度影响到整个项目的时间线。",s:3},
+      {t:"我觉得你太不负责任了。",s:2},
+      {t:"我真的很火大，你耽误了所有人的时间。",s:1},
+      {t:"你们部门都是废物。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要跨部门的协作顺畅，也希望我们能有一个明确的时间预期。",s:3},
+      {t:"我希望你按时完成分配给你的任务。",s:2},
+      {t:"你应该给我一个明确的交付时间。",s:1},
+      {t:"下次别再找你们部门了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"可以跟我同步一下目前这个需求的进展吗？如果遇到困难我们一起想办法，或者调整一下时间线。",s:3},
+      {t:"你什么时候能做完？给个准话。",s:2},
+      {t:"你能不能上点心？",s:1},
+      {t:"算了，我去找你们领导。",s:0}]}
+  },
+  { id:37, tag:"职场关系", title:"同事在你说话时频繁打断你",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"刚才开会我发言时，你打断了我三次。",s:3},
+      {t:"你总是打断别人说话，太没礼貌了。",s:2},
+      {t:"你根本不懂得倾听。",s:1},
+      {t:"你是不是觉得你说的才重要？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些沮丧和不被尊重，因为我的观点没有被完整地听完。",s:3},
+      {t:"我觉得你根本不把我的意见当回事。",s:2},
+      {t:"我很烦你这种自以为是的态度。",s:1},
+      {t:"你闭嘴行不行？",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要表达时被倾听，也希望团队讨论能有一个互相尊重的氛围。",s:3},
+      {t:"我希望你等别人说完再发言。",s:2},
+      {t:"你应该学会基本的礼貌。",s:1},
+      {t:"我不想跟你一起开会了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"可以让我先把话说完吗？我会给你充足的时间来回应。",s:3},
+      {t:"下次能不能别打断我？",s:2},
+      {t:"你能不能有点基本素养？",s:1},
+      {t:"你别说，听我说。",s:0}]}
+  },
+  { id:38, tag:"职场关系", title:"你无意中听到了同事在背后议论你",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我刚才经过茶水间时，听到你们在讨论关于我的工作表现的一些看法。",s:3},
+      {t:"你们在背后说我什么坏话？",s:2},
+      {t:"你们真阴险，有话不敢当面说？",s:1},
+      {t:"我就知道你们不是什么好东西。",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些难过和不安，因为这些话不是当面跟我说的。",s:3},
+      {t:"我觉得你们在背后搞小团体。",s:2},
+      {t:"我非常愤怒，有种来当面说。",s:1},
+      {t:"心寒了，这家公司没意思。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要一个开放透明的沟通环境，有反馈可以直接跟我说。",s:3},
+      {t:"我希望你们以后别在背后议论我。",s:2},
+      {t:"你们应该向我道歉。",s:1},
+      {t:"以后不跟你们说话了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"如果对我有什么意见或建议，可以直接跟我聊吗？我很愿意听听你们的想法。",s:3},
+      {t:"有什么话当面说，别在背后说。",s:2},
+      {t:"你们最好跟我解释清楚。",s:1},
+      {t:"无所谓了，看透你们了。",s:0}]}
+  },
+  // ── 扩充场景 (39-47) ──
+  ,{ id:39, tag:"闺蜜关系", title:"闺蜜总是跟你吐槽同一个前任",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"这周你已经跟我提了五次你前任的事了。",s:3},
+      {t:"你怎么又说那个渣男？烦不烦啊。",s:2},
+      {t:"你根本走不出来，翻来覆去就那些事。",s:1},
+      {t:"你有完没完啊？我不想听了。",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些疲惫和无力，因为我试了很多方法帮你走出来，但好像效果不大。",s:3},
+      {t:"我觉得你太粘人了，老拿这些事烦我。",s:2},
+      {t:"我很不耐烦，听都不想听了。",s:1},
+      {t:"关我什么事？",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"需要我们的友谊有更多积极的正向交流，也希望你真的能慢慢走出来。",s:3},
+      {t:"我希望你别再拿这些破事烦我了。",s:2},
+      {t:"你应该去找心理咨询师，不是来找我。",s:1},
+      {t:"我不想再当你情绪的垃圾桶了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"我真的很关心你，但反复聊前任可能对你走出来没有帮助。要不我们一起想想做点什么开心的事？",s:3},
+      {t:"以后别跟我说你前任的事了。",s:2},
+      {t:"你能不能有点出息，别再想那个人了？",s:1},
+      {t:"你爱怎样怎样吧，别来找我哭。",s:0}]}
+  },
+  { id:40, tag:"闺蜜关系", title:"闺蜜借钱不还还买新包",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"两个月前我借给你2000块，当时说好上个月还。我看到你昨天发了一个新包的照片。",s:3},
+      {t:"你有钱买新包没钱还我？",s:2},
+      {t:"你这个人太不靠谱了，借钱不还还乱花钱。",s:1},
+      {t:"我真是看错你了。",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些失望和困惑，因为我们的约定没有被遵守。",s:3},
+      {t:"我觉得你根本没把我的钱当回事。",s:2},
+      {t:"我很生气，你宁愿买包也不还钱。",s:1},
+      {t:"绝交吧，算我倒霉。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要信任和诚信，朋友之间的借贷也需要被认真对待。",s:3},
+      {t:"我希望你赶紧还钱。",s:2},
+      {t:"你应该先还钱再考虑其他消费。",s:1},
+      {t:"以后别想再从我这里借一分钱。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"我们当初说好上个月还的，这周方便转给我吗？如果最近紧张，我们也可以再商量一下时间。",s:3},
+      {t:"这周必须还钱。",s:2},
+      {t:"你别逼我去找你家里要。",s:1},
+      {t:"你自己看着办吧。",s:0}]}
+  },
+  { id:41, tag:"闺蜜关系", title:"闺蜜每次约你都临时改时间",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"最近三次约会，你都是在约定时间前一小时左右跟我说要改时间。",s:3},
+      {t:"你怎么又放鸽子？",s:2},
+      {t:"你根本就没有时间观念。",s:1},
+      {t:"你是不是觉得我的时间不值钱？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些被忽视，因为我每次都特意空出了时间。",s:3},
+      {t:"我觉得你不太尊重我。",s:2},
+      {t:"我很不爽，你每次都这样。",s:1},
+      {t:"以后别约了。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要彼此的约定被认真对待，这样我才能安心安排我的时间。",s:3},
+      {t:"我希望你以后准时一点。",s:2},
+      {t:"你应该提前一天说，临时说算什么？",s:1},
+      {t:"随便你。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"下次如果有变动，可以提前至少半天告诉我吗？这样我可以调整安排。",s:3},
+      {t:"以后别临时改时间了。",s:2},
+      {t:"你能不能靠谱一次？",s:1},
+      {t:"绝交。",s:0}]}
+  },
+  { id:42, tag:"爱人关系", title:"伴侣总在沙发上睡着不洗澡",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"最近一周有三天你都是在沙发上睡着了，没有洗澡就上床了。",s:3},
+      {t:"你越来越懒了，连澡都不洗。",s:2},
+      {t:"你能不能讲点卫生？",s:1},
+      {t:"你恶心不恶心？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有点不舒服和担心，因为卫生习惯影响到我的睡眠质量。",s:3},
+      {t:"我觉得你太不在乎我的感受了。",s:2},
+      {t:"我很生气，你能不能讲究一点？",s:1},
+      {t:"我真的受不了你了。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要我们的共同生活空间保持卫生，也希望我们都能照顾好自己的基本生活习惯。",s:3},
+      {t:"我希望你洗完澡再上床。",s:2},
+      {t:"你应该讲点基本卫生。",s:1},
+      {t:"分床睡吧。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"我知道你工作很累，但可以在上床前先洗个澡吗？如果实在太累，至少洗把脸换件睡衣再睡？",s:3},
+      {t:"以后不洗澡别上床。",s:2},
+      {t:"你能不能注意点个人卫生？",s:1},
+      {t:"你爱怎样怎样吧。",s:0}]}
+  },
+  { id:43, tag:"爱人关系", title:"伴侣和前任还有联系没告诉你",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我看到你手机上有一条来自你前任的微信消息，你之前没有提过你们还有联系。",s:3},
+      {t:"你是不是背着我跟你前任勾搭？",s:2},
+      {t:"你太不诚实了，居然瞒着我。",s:1},
+      {t:"你心里是不是还有他？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我感到有些不安和困惑，因为这件事让我有点意外。",s:3},
+      {t:"我觉得你背叛了我的信任。",s:2},
+      {t:"我非常生气，你居然骗我。",s:1},
+      {t:"分手吧，没什么好说的。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要在这段关系中有透明和信任，任何重要的联系人都希望我们能坦诚沟通。",s:3},
+      {t:"我希望你以后跟谁联系都告诉我。",s:2},
+      {t:"你应该马上删了他。",s:1},
+      {t:"你爱找谁找谁去吧。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"如果你们还有联系，可以跟我聊聊吗？我希望我们之间没有隐瞒。",s:3},
+      {t:"以后不许再跟他联系了。",s:2},
+      {t:"你现在就给他打电话说清楚。",s:1},
+      {t:"我不想看到你，走开。",s:0}]}
+  },
+  { id:44, tag:"家庭关系", title:"妈妈总在微信上转发养生谣言给你",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"妈，这个月你给我发了大概20篇养生类文章，我看到标题写着'致癌''千万别吃'这些词。",s:3},
+      {t:"妈，你别再发那些假新闻了。",s:2},
+      {t:"妈，你总是相信那些骗人的东西。",s:1},
+      {t:"妈，你能不能有点判断力？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我知道你是关心我，但看到这些标题我有点担心你会被误导。",s:3},
+      {t:"我觉得你好烦，总发这些没用的。",s:2},
+      {t:"这些谣言真的很蠢。",s:1},
+      {t:"我不想跟你说话了。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要你的关心，但也希望我们能有更真实、有价值的交流。",s:3},
+      {t:"我希望你别再发这些了。",s:2},
+      {t:"你应该先查查真假再发。",s:1},
+      {t:"你能不能别再烦我了？",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"妈，我知道你关心我。下次看到这种文章，先发给我，我们一起查查是不是真的，好吗？",s:3},
+      {t:"妈，别发了，我不看。",s:2},
+      {t:"你再发我就把你拉黑了。",s:1},
+      {t:"随便你吧。",s:0}]}
+  },
+  { id:45, tag:"家庭关系", title:"家人总劝你考公务员",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"最近三个月每次视频，你都提到建议我去考公务员。",s:3},
+      {t:"你怎么每次都提考公务员的事？",s:2},
+      {t:"你根本就不理解我想要什么。",s:1},
+      {t:"你能不能别管我的事了？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我知道你是为我好，但反复提同一件事让我感到有点压力。",s:3},
+      {t:"我觉得你根本不尊重我的选择。",s:2},
+      {t:"我很烦，你能不能别管我？",s:1},
+      {t:"你再这样我就不回家了。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我需要家人支持我的职业选择，也希望我们能互相理解彼此的关切。",s:3},
+      {t:"我希望你别再提考公务员这件事了。",s:2},
+      {t:"你应该支持我的决定。",s:1},
+      {t:"我的事不用你管。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"爸/妈，我知道你们担心我的稳定。我已经认真考虑过了，可以跟我说说你们具体担心什么吗？我也跟你们说说我的想法。",s:3},
+      {t:"以后别再说考公务员了。",s:2},
+      {t:"你能不能别操心了？",s:1},
+      {t:"说了你也不懂，不聊了。",s:0}]}
+  },
+  { id:46, tag:"亲子关系", title:"孩子考试没考好不敢告诉你",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"我看到你的书包里有一张成绩单，数学65分，日期是上周。你之前没有跟我提过这次考试。",s:3},
+      {t:"你是不是又没考好？",s:2},
+      {t:"你怎么考得这么差？",s:1},
+      {t:"你是不是又没好好学习？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"我看到你不敢告诉我，我有点心疼，因为我希望你能信任我。",s:3},
+      {t:"我觉得你在逃避问题。",s:2},
+      {t:"我很失望，你考成这样还不说。",s:1},
+      {t:"你真让我丢脸。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我希望你能知道，无论成绩如何，我都会陪着你一起面对——我需要我们的关系里有信任和安全感，而不是害怕。",s:3},
+      {t:"我希望你以后诚实告诉我成绩。",s:2},
+      {t:"你应该好好学习，别再考这么差了。",s:1},
+      {t:"你太让我失望了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"以后不管是好成绩还是坏成绩，都可以第一时间告诉我吗？我们一起看看哪里可以改进。",s:3},
+      {t:"下次考试多少分都要跟我说，知道吗？",s:2},
+      {t:"你要再瞒着我，回来就没收手机。",s:1},
+      {t:"我不想管你了。",s:0}]}
+  },
+  { id:47, tag:"亲子关系", title:"孩子跟你顶嘴说'你好烦'",
+    observe:{ q:"哪句话是纯粹的「观察」？", opts:[
+      {t:"刚才我说让你先去写作业，你回答我说'你好烦'。",s:3},
+      {t:"你怎么跟妈妈说话的？",s:2},
+      {t:"你越来越没礼貌了。",s:1},
+      {t:"你是不是想挨揍？",s:0}]},
+    feel:{ q:"你真实的「感受」是什么？", opts:[
+      {t:"听到你这么说，我感到有些受伤和难过。",s:3},
+      {t:"我觉得你不尊重我。",s:2},
+      {t:"我很生气，你这种态度太让人心寒了。",s:1},
+      {t:"你真是不知好歹。",s:0}]},
+    need:{ q:"你内心的「需要」是什么？", opts:[
+      {t:"我们需要在彼此的交流中有尊重，即使意见不同也可以用平和的方式表达。",s:3},
+      {t:"我希望你以后好好跟我说话。",s:2},
+      {t:"你应该马上向我道歉。",s:1},
+      {t:"你别想再玩任何游戏了。",s:0}]},
+    request:{ q:"最符合NVC「请求」的表达是？", opts:[
+      {t:"妈妈刚才说的话让你不高兴了吗？如果你现在不想写作业，我们可以商量一下几点开始，但可以不要用'你好烦'这样的话吗？",s:3},
+      {t:"以后不许再说'你好烦'。",s:2},
+      {t:"你现在马上去写作业，别废话。",s:1},
+      {t:"你爱怎样怎样吧，不管你了。",s:0}]}
+  }
+];
+
+// ============================================================
+// GAME STATE
+// ============================================================
+let mode = null;           // 'nvc' | 'violent'
+let currentScenarios = []; // 3 randomly selected scenarios
+let currentScenarioIdx = 0; // 0,1,2 — which scenario page
+let currentStepKey = 'observe'; // 'observe'|'feel'|'need'|'request' — which step is active
+let autoAdvanceTimer = null; // cancelable auto-advance to next scenario
+// answers: keyed by "scenarioId-elementKey" — { scenarioId, elementKey, optionIdx, score }
+let answers = {};
+let selectedCategories = []; // populated by homepage category chips
+
+// Step data
+const ELEMENT_ORDER = ['observe','feel','need','request'];
+const ELEMENT_NAMES = {observe:'观察', feel:'感受', need:'需要', request:'请求'};
+const ELEMENT_ICONS = {observe:'👁️', feel:'💗', need:'🎯', request:'🤝'};
+
+const CATEGORIES = [
+  { tag:'闺蜜关系', label:'👭 闺蜜朋友' },
+  { tag:'爱人关系', label:'💑 爱人伴侣' },
+  { tag:'家庭关系', label:'👨‍👩‍👧 家庭父母' },
+  { tag:'亲子关系', label:'🧒 亲子教育' },
+  { tag:'职场关系', label:'💼 职场沟通' },
+];
+
+// ============================================================
+// PERSISTENCE — localStorage for daily challenge & achievements
+// ============================================================
+const STORAGE_KEY = 'nvc_game_data';
+const LEVEL_KEY = 'nvc_level'; // 'expert'|'advanced'|'average'|'beginner'|null
+
+function loadStorage() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) { /* ignore corrupt data */ }
+  return { dailyDate: null, lastPlayDate: null, streak: 0, achievements: [], playedTags: [], totalGames: 0, bestScore: 0 };
+}
+
+function saveStorage(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function shuffle(arr) { const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function getScore(base) { return mode==='nvc'?base:3-base; }
+function totalScore() { return Object.values(answers).reduce((s,a)=>s+(a.score||0),0); }
+function answerKey(sid, ek) { return sid+'-'+ek; }
+function getAnswer(sid, ek) { return answers[answerKey(sid,ek)]; }
+function isStepDone(sid, ek) { return !!getAnswer(sid,ek); }
+function allStepsDone(sid) { return ELEMENT_ORDER.every(k=>isStepDone(sid,k)); }
+function elemScores() {
+  const map = {observe:0,feel:0,need:0,request:0};
+  Object.values(answers).forEach(a=>{if(map[a.elementKey]!==undefined)map[a.elementKey]+=a.score||0;});
+  return map;
+}
+
+// ============================================================
+// GAME SETUP
+// ============================================================
+function startGame(m, selectedTags) {
+  mode = m;
+  answers = {};
+  currentScenarioIdx = 0;
+  currentStepKey = 'observe';
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+  const pool = selectedTags && selectedTags.length > 0
+    ? scenarioPool.filter(s => selectedTags.includes(s.tag))
+    : scenarioPool;
+  currentScenarios = shuffle(pool).slice(0,3);
+  const bgClass = mode==='nvc'?'game-nvc':'game-violent';
+  document.getElementById('body').className = bgClass;
+  document.getElementById('app').className = mode==='violent'?'game-violent':'';
+  renderScenarioPage();
+}
+
+// ============================================================
+// RENDER SCENARIO PAGE (flow diagram + current question)
+// ============================================================
+function renderScenarioPage() {
+  if (currentScenarioIdx >= currentScenarios.length) { renderResult(); return; }
+
+  const s = currentScenarios[currentScenarioIdx];
+  const cls = mode==='nvc'?'nvc':'violent';
+  const score = totalScore();
+  const maxScore = currentScenarios.length * ELEMENT_ORDER.length * 3;
+
+  // Flow diagram — each dot/line gets an id for smooth DOM updates
+  let flowHTML = '<div class="flow-diagram">';
+  ELEMENT_ORDER.forEach((key, i) => {
+    const done = isStepDone(s.id, key);
+    const active = key === currentStepKey;
+    let dotCls = done ? `done ${cls}` : (active ? `active ${cls}` : 'pending');
+    let lineCls = '';
+    if (i < 3) {
+      const nextDone = isStepDone(s.id, ELEMENT_ORDER[i+1]);
+      lineCls = nextDone ? `done ${cls}` : 'pending';
+    }
+    const nodeCls = active ? 'flow-node active-node' : 'flow-node';
+    flowHTML += `<div class="${nodeCls}" id="flow-node-${key}">
+      <div class="flow-dot ${dotCls}" id="flow-dot-${key}">${done?'✓':ELEMENT_ICONS[key]}</div>
+      <span class="flow-label" id="flow-label-${key}">${ELEMENT_NAMES[key]}</span>
+    </div>`;
+    if (i < 3) flowHTML += `<div class="flow-line ${lineCls}" id="flow-line-${i}"></div>`;
+  });
+  flowHTML += '</div>';
+
+  // Current question
+  const elem = s[currentStepKey];
+  const shuffledOpts = (function(){
+    const key = '_opts_'+s.id+'_'+currentStepKey;
+    if (!s[key]) s[key] = shuffle(elem.opts.map((o,i)=>({...o,origIdx:i})));
+    return s[key];
+  })();
+
+  const letters = ['🐣','🐥','🐔','🦄'];
+  let optsHTML = '';
+  const curAns = getAnswer(s.id, currentStepKey);
+  shuffledOpts.forEach((opt, i) => {
+    const isSel = curAns && curAns.optionIdx === i;
+    optsHTML += `<button class="opt-btn${isSel?' selected':''}" onclick="selectAnswer('${currentStepKey}',${i})" id="opt-${i}">
+      <span class="opt-letter">${letters[i]}</span><span>${opt.t}</span></button>`;
+  });
+
+  // All steps done for this scenario?
+  const scenarioDone = allStepsDone(s.id);
+
+  const lastScenario = currentScenarioIdx === currentScenarios.length - 1;
+
+  document.getElementById('app').innerHTML = `
+    <div class="card">
+      <div class="game-header">
+        <span class="mode-chip ${cls}">${mode==='nvc'?'🌿 非暴力沟通挑战':'🔥 暴力沟通大挑战'}</span>
+        <span class="score-badge ${cls}">得分 <span class="score-num" id="liveScore">${score}</span></span>
+      </div>
+      <span class="scenario-chip ${cls}">${s.tag} · 场景 ${currentScenarioIdx+1}/3</span>
+      <div style="font-size:1.2rem;font-weight:800;color:var(--text);margin:4px 0;">${s.title}</div>
+      <div class="scenario-desc ${cls}">${s.text||s.title}</div>
+      ${s.emotion ? `<div class="scenario-emotion-hint">${s.emotion}</div>` : ''}
+      ${flowHTML}
+      <div id="qArea" class="question-area">
+        <div class="element-label ${cls}" id="elLabel">${ELEMENT_NAMES[currentStepKey]}</div>
+        <div class="question-box ${cls}" id="qBox">${elem.q}</div>
+        <div class="options-list" id="optList">${optsHTML}</div>
+      </div>
+      <div class="nav-row">
+        <button class="btn-nav prev" id="btnPrev" ${currentScenarioIdx===0?'disabled':''} onclick="prevScenario()">◀ 上一场景</button>
+        <span class="nav-scene-indicator">${currentScenarioIdx+1} / ${currentScenarios.length}</span>
+        <button class="btn-nav next" id="btnNext" ${!scenarioDone?'disabled':''} onclick="nextScenario()">${lastScenario?'🎉 揭晓结果':'下一场景 ▶'}</button>
+      </div>
+      <div style="text-align:center;margin-top:12px;">
+        <button class="btn btn-quit" onclick="renderHome()">🏠 退出</button>
+      </div>
+    </div>`;
+}
+
+function selectAnswer(stepKey, optIdx) {
+  const s = currentScenarios[currentScenarioIdx];
+  const optsKey = '_opts_'+s.id+'_'+stepKey;
+  const shuffledOpts = s[optsKey];
+  const baseScore = shuffledOpts[optIdx].s;
+  const finalScore = getScore(baseScore);
+
+  answers[answerKey(s.id, stepKey)] = {
+    scenarioId: s.id, elementKey: stepKey,
+    optionIdx: optIdx, score: finalScore, baseScore
+  };
+
+  // Update option styling in-place (no full re-render)
+  shuffledOpts.forEach((_,i)=>{
+    const el = document.getElementById('opt-'+i);
+    if(el) el.classList.toggle('selected', i===optIdx);
+  });
+
+  // Animate live score
+  const sEl = document.getElementById('liveScore');
+  if(sEl){sEl.textContent=totalScore();sEl.style.animation='none';sEl.offsetHeight;sEl.style.animation='popIn 0.3s cubic-bezier(0.16,1,0.3,1)';}
+
+  // Update flow diagram immediately (dot turns green/red)
+  updateFlowDiagram(s.id, stepKey);
+
+  const curIdx = ELEMENT_ORDER.indexOf(stepKey);
+  if (curIdx < 3) {
+    // Advance to next step within same scenario — smooth fade transition
+    currentStepKey = ELEMENT_ORDER[curIdx + 1];
+    const qArea = document.getElementById('qArea');
+    if (qArea) {
+      qArea.classList.add('switching');
+      setTimeout(() => {
+        refreshQuestionContent();
+        qArea.classList.remove('switching');
+      }, 200);
+    } else {
+      renderScenarioPage();
+    }
+  } else {
+    // Last step (request) done → enable nav, auto-advance or wait for click
+    updateNavButtons(s.id);
+    if (currentScenarioIdx < currentScenarios.length - 1) {
+      if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+      autoAdvanceTimer = setTimeout(() => { autoAdvanceTimer = null; nextScenario(); }, 650);
+    }
+  }
+}
+
+function prevScenario() {
+  if (currentScenarioIdx <= 0) return;
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+  currentScenarioIdx--;
+  currentStepKey = 'observe';
+  renderScenarioPage();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function nextScenario() {
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+  currentScenarioIdx++;
+  currentStepKey = 'observe';
+  if (currentScenarioIdx >= currentScenarios.length) renderResult();
+  else { renderScenarioPage(); window.scrollTo({top:0,behavior:'smooth'}); }
+}
+
+function updateFlowDiagram(sid, activeKey) {
+  const cls = mode==='nvc'?'nvc':'violent';
+  ELEMENT_ORDER.forEach((key, i) => {
+    const done = isStepDone(sid, key);
+    const active = key === activeKey;
+    const dotEl = document.getElementById('flow-dot-'+key);
+    const nodeEl = document.getElementById('flow-node-'+key);
+    if (dotEl) {
+      dotEl.className = 'flow-dot ' + (done ? `done ${cls}` : (active ? `active ${cls}` : 'pending'));
+      dotEl.textContent = done ? '✓' : ELEMENT_ICONS[key];
+    }
+    if (nodeEl) {
+      nodeEl.className = active ? 'flow-node active-node' : 'flow-node';
+    }
+    if (i < 3) {
+      const lineEl = document.getElementById('flow-line-'+i);
+      if (lineEl) {
+        const nextDone = isStepDone(sid, ELEMENT_ORDER[i+1]);
+        lineEl.className = 'flow-line ' + (nextDone ? `done ${cls}` : 'pending');
+      }
+    }
+  });
+}
+
+function refreshQuestionContent() {
+  const s = currentScenarios[currentScenarioIdx];
+  const cls = mode==='nvc'?'nvc':'violent';
+  const elem = s[currentStepKey];
+  const optKey = '_opts_'+s.id+'_'+currentStepKey;
+  if (!s[optKey]) s[optKey] = shuffle(elem.opts.map((o,i)=>({...o,origIdx:i})));
+  const shuffledOpts = s[optKey];
+  const letters = ['🐣','🐥','🐔','🦄'];
+  const curAns = getAnswer(s.id, currentStepKey);
+
+  // Update element label
+  const elLabel = document.getElementById('elLabel');
+  if (elLabel) {
+    elLabel.textContent = ELEMENT_NAMES[currentStepKey];
+    elLabel.className = 'element-label ' + cls;
+  }
+  // Update question box
+  const qBox = document.getElementById('qBox');
+  if (qBox) {
+    qBox.textContent = elem.q;
+    qBox.className = 'question-box ' + cls;
+  }
+  // Update options
+  const optList = document.getElementById('optList');
+  if (optList) {
+    let h = '';
+    shuffledOpts.forEach((opt, i) => {
+      const isSel = curAns && curAns.optionIdx === i;
+      h += `<button class="opt-btn${isSel?' selected':''}" onclick="selectAnswer('${currentStepKey}',${i})" id="opt-${i}">
+        <span class="opt-letter">${letters[i]}</span><span>${opt.t}</span></button>`;
+    });
+    optList.innerHTML = h;
+  }
+  // Update flow diagram
+  updateFlowDiagram(s.id, currentStepKey);
+}
+
+function updateNavButtons(sid) {
+  const btnNext = document.getElementById('btnNext');
+  const scenarioDone = allStepsDone(sid);
+  if (btnNext) {
+    btnNext.disabled = !scenarioDone;
+    btnNext.textContent = currentScenarioIdx === currentScenarios.length - 1 ? '🎉 揭晓结果' : '下一场景 ▶';
+  }
+  const btnPrev = document.getElementById('btnPrev');
+  if (btnPrev) btnPrev.disabled = (currentScenarioIdx === 0);
+}
+
+// ============================================================
+// RESULT PAGE
+// ============================================================
+function renderResult() {
+  const score = totalScore();
+  const maxScore = currentScenarios.length * ELEMENT_ORDER.length * 3;
+  const cls = mode === 'nvc' ? 'nvc' : 'violent';
+  // Update storage (daily, streak, achievements)
+  const storage = loadStorage();
+  const today = new Date().toISOString().slice(0,10);
+  storage.totalGames = (storage.totalGames || 0) + 1;
+  if (storage.bestScore === undefined || score > storage.bestScore) {
+    storage.bestScore = score;
+  }
+  if (storage.dailyDate !== today) {
+    storage.dailyDate = today;
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0,10);
+    storage.streak = (storage.lastPlayDate === yesterday) ? (storage.streak || 0) + 1 : 1;
+    storage.lastPlayDate = today;
+  }
+  if (!storage.achievements) storage.achievements = [];
+  if (score >= 30 && !storage.achievements.includes('master')) {
+    storage.achievements.push('master');
+  }
+  if (storage.streak >= 7 && !storage.achievements.includes('streak7')) {
+    storage.achievements.push('streak7');
+  }
+  const playedTags = storage.playedTags || [];
+  currentScenarios.forEach(s => {
+    if (!playedTags.includes(s.tag)) playedTags.push(s.tag);
+  });
+  storage.playedTags = playedTags;
+  const allTags = CATEGORIES.map(c => c.tag);
+  const hasAll = allTags.every(t => playedTags.includes(t));
+  if (hasAll && !storage.achievements.includes('all_categories')) {
+    storage.achievements.push('all_categories');
+  }
+  saveStorage(storage);
+  const cClass = (s) => mode === 'nvc' ? 'nvc-c' : 'v-c';
+
+  // Evaluation data
+  let icon, title, nickname, msg;
+  if (mode === 'nvc') {
+    if (score >= 30) {
+      icon='🌈'; title='NVC 神仙'; nickname='绰号：和平使者 · 沟通界白月光';
+      msg='天呐！你是不是偷偷把《非暴力沟通》全书背下来了？你在每个场景中都精准地选择了最温柔也最有效的表达方式。你身边的人一定觉得跟你说话很舒服——继续保持，你就是朋友圈里的沟通天花板。';
+    } else if (score >= 24) {
+      icon='🌻'; title='沟通高手'; nickname='绰号：人间清醒 · 情绪稳定代言人';
+      msg=`你在大多数情况下都能用非暴力的方式表达自己。有时候一两个选项犹豫了一下选了次优的，但整体已经非常棒了。小提示：观察时再少一点「每次」和「总是」，你就是下一个NVC大师。`;
+    } else if (score >= 18) {
+      icon='🌱'; title='进步青年'; nickname='绰号：觉醒中的小刺猬 · 嘴硬心软';
+      msg='你已经有了非暴力沟通的基础意识，但在具体情境中偶尔会不自觉地滑向评判或模糊表达。别担心，这太正常了！NVC不是要你完美，而是让你在每次沟通中有意识地去选择——今天你已经开始选择了。';
+    } else if (score >= 12) {
+      icon='🦔'; title='NVC 练习生'; nickname='绰号：易燃易爆炸 · 脾气来得快去得更快';
+      msg=`你有一颗想好好说话的心，但情绪一上来就容易失控。说实话，谁不是呢！推荐一个练习：下次生气时先深呼吸三次，然后试试用「我感到……因为我需要……」来开头。每天练一次，一个月后你会感谢自己。`;
+    } else {
+      icon='🐣'; title='暴力萌新'; nickname='绰号：人间加特林 · 突突突停不下来';
+      msg='哈哈哈，你的得分说明你可能是个直性子——有什么说什么，不拐弯抹角。这本身不是坏事！但马歇尔·卢森堡博士说：语言可以是窗户，也可以是墙。你现在的语言可能墙比较多，但没关系，意识到就是改变的第一步。推荐重读《非暴力沟通》第一章。';
+    }
+  } else {
+    if (score >= 30) {
+      icon='👑'; title='终极BOSS'; nickname='绰号：社交核弹 · 一句话毁掉一段关系';
+      msg='恭喜你！你在暴力沟通领域达到了巅峰造极的境界。威胁、评判、冷暴力、标签攻击样样精通。但说实话——如果你在现实中真的这样说话，可能已经没朋友了。现在去玩玩非暴力模式，看看另一个平行宇宙的你吧！';
+    } else if (score >= 24) {
+      icon='🌋'; title='冲突大师'; nickname='绰号：行走的火药桶 · 一点就着';
+      msg=`你的沟通方式极易引发冲突和冷战。即使规则鼓励你选「暴力」答案，你还是展现出了惊人的火力。好消息是：你知道这些是「错误答案」——真正的暴力沟通者往往意识不到自己在伤害别人。去非暴力模式看看吧。`;
+    } else if (score >= 18) {
+      icon='⚡'; title='嘴炮达人'; nickname='绰号：阴阳怪气小能手 · 怼人十级';
+      msg=`你时不时会选择一些带刺的表达。可能在生活中你也习惯用讽刺或者反问来表达不满。NVC提醒我们——这些「语言暗器」虽然当下解气，但长期会伤害关系。试试非暴力模式，体验一下不用暗器只用真诚的沟通。`;
+    } else if (score >= 12) {
+      icon='🐱'; title='温和派'; nickname='绰号：想凶但凶不起来 · 本质善良';
+      msg='即使在鼓励暴力的模式下，你还是下意识地选择相对温和的表达。这说明你的本性并不具有攻击性——你可能只是偶尔在情绪激动时口不择言。推荐玩玩非暴力模式，看看你是不是天生就有NVC的潜质。';
+    } else {
+      icon='🦄'; title='暴力绝缘体'; nickname='绰号：圣母光环持有者 · 人间小天使';
+      msg=`连暴力模式都暴力不起来！在规则疯狂暗示你选「暴力」回应的情况下，你依然坚持选择最温和、最合作的方式。你的沟通本能已经极度贴近非暴力沟通了。去非暴力模式拿个满分吧，那是你应得的！`;
+    }
+  }
+
+  // Per-element breakdown (hidden)
+  const es = elemScores();
+  let breakdownHTML = '';
+  ELEMENT_ORDER.forEach(key => {
+    breakdownHTML += `<div class="break-item">
+      <div class="b-label">${ELEMENT_NAMES[key]}</div>
+      <div class="b-score ${cClass(key)}">${es[key]} / 3</div>
+    </div>`;
+  });
+
+  const modeEmoji = mode==='nvc'?'🌿':'🔥';
+  const modeLabel = mode==='nvc'?'非暴力沟通':'暴力沟通';
+
+  document.getElementById('app').innerHTML = `
+    <div class="card result-wrap">
+      <div class="result-emoji reveal-anim d1">🎁</div>
+      <div class="result-title reveal-anim d2" style="color:var(--text);">挑战完成！</div>
+      <div class="result-nickname reveal-anim d2" style="color:var(--text-light);">${mode==='nvc'?'非暴力沟通':'暴力沟通'} · ${currentScenarios.length}个场景全通关</div>
+      <div id="revealHidden" class="reveal-hidden">
+        <div class="result-emoji" style="margin-top:6px;">${icon}</div>
+        <div class="result-title">${title}</div>
+        <div class="result-nickname">${nickname}</div>
+        <div class="result-score-wrap" onclick="toggleBreakdown()" id="scoreClickArea">
+          <div class="result-score-big ${cls} score-count-up" id="bigScore">${score}</div>
+          <div class="result-score-sub">总分 / ${maxScore} 分</div>
+          <div class="result-score-hint">👆 点击查看各要素得分</div>
+        </div>
+        <div class="breakdown-wrap" id="breakdownWrap">
+          <div class="breakdown-grid">${breakdownHTML}</div>
+        </div>
+        <div class="result-msg ${cls}">${msg}</div>
+        <div class="share-row">
+          <button class="btn-share" onclick="shareResult()">📸 生成分享图片</button>
+        </div>
+      </div>
+      <div class="reveal-btn-wrap" id="revealBtnWrap">
+        <button class="btn-reveal" onclick="revealResult()">✨ 点击揭晓结果 ✨</button>
+      </div>
+      <canvas id="shareCanvas" width="500" height="600"></canvas>
+      <div class="result-btns">
+        <button class="rbtn rbtn-replay" onclick="startGame(mode)">
+          <span class="rbtn-emoji">🔄</span>再用此模式
+        </button>
+        <button class="rbtn rbtn-switch" onclick="startGame('${mode === 'nvc' ? 'violent' : 'nvc'}')">
+          <span class="rbtn-emoji">${mode === 'nvc' ? '🔥' : '🌿'}</span>切换模式
+        </button>
+        <button class="rbtn rbtn-home" onclick="showInterstitialAd()">
+          <span class="rbtn-emoji">🏠</span>回首页
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Confetti fires in revealResult() after user clicks reveal
+}
+
+function toggleBreakdown() {
+  const wrap = document.getElementById('breakdownWrap');
+  if (wrap) {
+    wrap.classList.toggle('open');
+    const hint = document.querySelector('.result-score-hint');
+    if (hint) hint.textContent = wrap.classList.contains('open') ? '👆 点击收起' : '👆 点击查看各要素得分';
+  }
+}
+
+function revealResult() {
+  // Hide the reveal button with a fade
+  const btnWrap = document.getElementById('revealBtnWrap');
+  if (btnWrap) {
+    btnWrap.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    btnWrap.style.opacity = '0';
+    btnWrap.style.transform = 'scale(0.9)';
+  }
+  // Show the hidden content with staggered animation
+  setTimeout(() => {
+    if (btnWrap) btnWrap.style.display = 'none';
+    const hidden = document.getElementById('revealHidden');
+    if (hidden) {
+      hidden.classList.remove('reveal-hidden');
+      // Stagger each child with reveal-anim
+      const children = hidden.children;
+      for (let i = 0; i < children.length; i++) {
+        children[i].classList.add('reveal-anim', 'd' + Math.min(i + 3, 5));
+      }
+    }
+    // Check for confetti
+    const score = totalScore();
+    if ((mode === 'nvc' && score >= 30) || (mode === 'violent' && score >= 30)) {
+      setTimeout(() => { launchConfetti(); }, 400);
+    }
+  }, 300);
+}
+
+// ============================================================
+// SHARE — Canvas image generation
+// ============================================================
+function shareResult() {
+  const canvas = document.getElementById('shareCanvas');
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  const w = 500, h = 600;
+  canvas.width = w; canvas.height = h;
+
+  const score = totalScore();
+  const maxScore = currentScenarios.length * ELEMENT_ORDER.length * 3;
+  const isNVC = mode === 'nvc';
+  const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+  if (isNVC) {
+    bgGrad.addColorStop(0, '#f0faf0'); bgGrad.addColorStop(0.5, '#e8f4e8'); bgGrad.addColorStop(1, '#f4f8f0');
+  } else {
+    bgGrad.addColorStop(0, '#3a2430'); bgGrad.addColorStop(0.5, '#2a1822'); bgGrad.addColorStop(1, '#3a2030');
+  }
+  ctx.fillStyle = bgGrad;
+  roundRect(ctx, 0, 0, w, h, 28);
+  ctx.fill();
+
+  // Header
+  ctx.fillStyle = isNVC ? '#4a7868' : '#e0b0c0';
+  ctx.font = 'bold 22px Nunito, "PingFang SC", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(isNVC ? '🌿 非暴力沟通大挑战' : '🔥 暴力沟通大挑战', w/2, 48);
+
+  // Icon
+  ctx.font = '72px sans-serif';
+  ctx.fillText(getResultIcon(), w/2, 130);
+
+  // Title
+  ctx.fillStyle = isNVC ? '#3d3a4e' : '#e0d0d8';
+  ctx.font = 'bold 30px Nunito, "PingFang SC", sans-serif';
+  ctx.fillText(getResultTitle(), w/2, 175);
+
+  // Nickname
+  ctx.fillStyle = isNVC ? '#7a7288' : '#b098a8';
+  ctx.font = '16px Nunito, "PingFang SC", sans-serif';
+  ctx.fillText(getResultNickname(), w/2, 205);
+
+  // Score
+  ctx.fillStyle = isNVC ? '#7ec8a0' : '#e8738a';
+  ctx.font = 'bold 64px Nunito, sans-serif';
+  ctx.fillText(score, w/2, 275);
+  ctx.fillStyle = isNVC ? '#7a7288' : '#b098a8';
+  ctx.font = '16px Nunito, "PingFang SC", sans-serif';
+  ctx.fillText('总分 / ' + maxScore + ' 分', w/2, 300);
+
+  // Breakdown boxes
+  const es = elemScores();
+  const boxW = 90, boxH = 72, startX = 42, gap = 16, boxY = 330;
+  ELEMENT_ORDER.forEach((key, i) => {
+    const x = startX + i * (boxW + gap);
+    ctx.fillStyle = isNVC ? '#f4faf4' : '#3a2835';
+    roundRect(ctx, x, boxY, boxW, boxH, 14);
+    ctx.fill();
+    ctx.fillStyle = isNVC ? '#7ec8a0' : '#e8738a';
+    ctx.font = 'bold 14px Nunito, "PingFang SC", sans-serif';
+    ctx.fillText(ELEMENT_NAMES[key], x + boxW/2, boxY + 28);
+    ctx.fillStyle = isNVC ? '#3d3a4e' : '#e0d0d8';
+    ctx.font = 'bold 22px Nunito, sans-serif';
+    ctx.fillText((es[key]||0)+' / 3', x + boxW/2, boxY + 54);
+  });
+
+  // Footer
+  ctx.fillStyle = isNVC ? '#b0a8b8' : '#8a7888';
+  ctx.font = '13px Nunito, "PingFang SC", sans-serif';
+  ctx.fillText('非暴力沟通大挑战 · NVC Game', w/2, boxY + boxH + 40);
+  ctx.fillText('观察 → 感受 → 需要 → 请求', w/2, boxY + boxH + 62);
+  ctx.fillText('日期：' + new Date().toLocaleDateString('zh-CN'), w/2, boxY + boxH + 84);
+
+  // Download
+  canvas.toBlob(blob => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.download = 'NVC挑战结果_' + new Date().toISOString().slice(0,10) + '.png';
+    a.href = url; a.click();
+    URL.revokeObjectURL(url);
+  });
+  canvas.style.display = 'none';
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y); ctx.lineTo(x+w-r, y);
+  ctx.arcTo(x+w, y, x+w, y+r, r);
+  ctx.lineTo(x+w, y+h-r); ctx.arcTo(x+w, y+h, x+w-r, y+h, r);
+  ctx.lineTo(x+r, y+h); ctx.arcTo(x, y+h, x, y+h-r, r);
+  ctx.lineTo(x, y+r); ctx.arcTo(x, y, x+r, y, r);
+  ctx.closePath();
+}
+
+function getResultIcon() {
+  const s = totalScore();
+  if(mode==='nvc'){
+    if(s>=30)return'🌈';if(s>=24)return'🌻';if(s>=18)return'🌱';if(s>=12)return'🦔';return'🐣';
+  }else{
+    if(s>=30)return'👑';if(s>=24)return'🌋';if(s>=18)return'⚡';if(s>=12)return'🐱';return'🦄';
+  }
+}
+function getResultTitle() {
+  const s = totalScore();
+  if(mode==='nvc'){
+    if(s>=30)return'NVC 神仙';if(s>=24)return'沟通高手';if(s>=18)return'进步青年';if(s>=12)return'NVC 练习生';return'暴力萌新';
+  }else{
+    if(s>=30)return'终极BOSS';if(s>=24)return'冲突大师';if(s>=18)return'嘴炮达人';if(s>=12)return'温和派';return'暴力绝缘体';
+  }
+}
+function getResultNickname() {
+  const s = totalScore();
+  if(mode==='nvc'){
+    if(s>=30)return'绰号：和平使者 · 沟通界白月光';if(s>=24)return'绰号：人间清醒 · 情绪稳定代言人';
+    if(s>=18)return'绰号：觉醒中的小刺猬 · 嘴硬心软';if(s>=12)return'绰号：易燃易爆炸';
+    return'绰号：人间加特林';
+  }else{
+    if(s>=30)return'绰号：社交核弹';if(s>=24)return'绰号：行走的火药桶';
+    if(s>=18)return'绰号：阴阳怪气小能手';if(s>=12)return'绰号：想凶但凶不起来';
+    return'绰号：圣母光环持有者';
+  }
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.style.display = 'block';
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#ff8fab','#ffb3ba','#ffdac1','#b5ead7','#c7ceea','#a2d2ff','#fdfd96','#ff9aa2','#e2f0cb','#d5aaff'];
+  const particles = [];
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vx: (Math.random() - 0.5) * 3,
+      vy: Math.random() * 3 + 2,
+      rot: Math.random() * 360,
+      rv: (Math.random() - 0.5) * 10
+    });
+  }
+
+  let frame = 0;
+  function animate() {
+    if (frame > 180) { canvas.style.display = 'none'; return; }
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.rv;
+      p.vy += 0.03;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ============================================================
+// HOME PAGE
+// ============================================================
+function renderHome() {
+  selectedCategories = CATEGORIES.map(c => c.tag);
+  document.getElementById('body').className = 'home-bg';
+  document.getElementById('app').className = '';
+  const totalScenarios = scenarioPool.length;
+  const catCounts = {};
+  scenarioPool.forEach(s => { catCounts[s.tag] = (catCounts[s.tag]||0)+1; });
+  // Achievement display
+  const storage = loadStorage();
+  let achHTML = '';
+  const allAch = [
+    { id:'master', icon:'🏆', label:'沟通高手', desc:'任意模式满分' },
+    { id:'streak7', icon:'🔥', label:'日日精进', desc:'连续7天完成挑战' },
+    { id:'all_categories', icon:'🌟', label:'海纳百川', desc:'体验过所有分类' },
+  ];
+  const unlocked = storage.achievements || [];
+  achHTML = `<div style="margin-top:12px;padding-top:12px;border-top:1.5px solid #eee0ee;">
+    <div style="font-size:0.78rem;font-weight:700;color:var(--text-light);margin-bottom:6px;">
+      🏅 成就徽章 (${unlocked.length}/${allAch.length})
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+      ${allAch.map(a => `
+        <span style="display:inline-flex;align-items:center;gap:4px;
+          padding:4px 12px;border-radius:16px;font-size:0.78rem;font-weight:700;
+          ${unlocked.includes(a.id)
+            ? 'background:var(--mint);color:var(--nvc-dark);'
+            : 'background:#f0e8f0;color:#c0b0c0;'}"
+          title="${a.desc}">
+          ${unlocked.includes(a.id) ? a.icon : '🔒'} ${a.label}
+        </span>
+      `).join('')}
+    </div>
+    <div style="font-size:0.72rem;color:var(--text-light);margin-top:4px;">
+      累计 ${storage.totalGames||0} 局 · 连续 ${storage.streak||0} 天 · 最高 ${storage.bestScore||0} 分
+    </div>
+  </div>`;
+
+  document.getElementById('app').innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div class="home-mascot">🕊️</div>
+      <h1 class="home-title">非暴力沟通大挑战</h1>
+      <p class="home-sub" style="margin-bottom:12px;">
+        ${totalScenarios}个温暖场景 · 每次随机3个 · 12道选择题
+      </p>
+      <div class="mode-btns">
+        <button class="mode-btn nvc" onclick="startGameWithSelected('nvc')">
+          <span class="btn-emoji">🌿</span>非暴力沟通挑战
+          <span class="btn-tag">正面回应得分高 · 测测你的温暖指数</span>
+        </button>
+        <button class="mode-btn violent" onclick="startGameWithSelected('violent')">
+          <span class="btn-emoji">🔥</span>暴力沟通大挑战
+          <span class="btn-tag">反向计分：越凶越高分 · 你敢试试吗？</span>
+        </button>
+      </div>
+      <div style="margin-top:10px;font-weight:700;color:var(--text);font-size:0.9rem;">
+        📂 选择想练习的场景分类
+      </div>
+      <div class="cat-grid" id="catGrid">
+        ${CATEGORIES.map(c => {
+          const count = catCounts[c.tag]||0;
+          return `<label class="cat-chip selected" data-tag="${c.tag}" id="chip-${c.tag}">
+            <input type="checkbox" checked onchange="toggleCategory('${c.tag}',this.checked)">
+            ${c.label} <span style="font-size:0.75rem;opacity:0.7;">${count}个</span>
+          </label>`;
+        }).join('')}
+      </div>
+      <div class="cat-count" id="catCount">已选 ${selectedCategories.length} 个分类</div>
+      <p style="margin-top:14px;font-size:0.75rem;color:#b0a8b8;">
+        选项位置随机变化 📝 每题含NVC四要素之一
+      </p>
+      <div class="ad-banner" id="adBanner">
+        📢 广告位 — 接入 AdSense / 百度联盟
+      </div>
+      <div style="text-align:center;margin-top:6px;">
+        <button class="learn-btn secondary" style="padding:6px 18px;font-size:0.78rem;display:inline-flex;align-items:center;gap:4px;" onclick="renderLearningCards(0)">
+          📖 重温 NVC 入门
+        </button>
+      </div>
+      ${achHTML}
+    </div>`;
+}
+
+function toggleCategory(tag, checked) {
+  if (checked) {
+    if (!selectedCategories.includes(tag)) selectedCategories.push(tag);
+  } else {
+    selectedCategories = selectedCategories.filter(t => t !== tag);
+  }
+  const chip = document.getElementById('chip-'+tag);
+  if (chip) chip.classList.toggle('selected', checked);
+  const countEl = document.getElementById('catCount');
+  if (countEl) countEl.textContent = `已选 ${selectedCategories.length} 个分类`;
+}
+
+function startGameWithSelected(mode) {
+  startGame(mode, selectedCategories);
+}
+
+function showInterstitialAd() {
+  const overlay = document.createElement('div');
+  overlay.className = 'ad-interstitial-overlay';
+  overlay.id = 'interstitialAd';
+  overlay.innerHTML = `
+    <div class="ad-interstitial-box">
+      <div class="ad-placeholder">
+        📢 插屏广告位<br>接入 AdSense / 百度联盟
+      </div>
+      <button class="ad-close-btn" onclick="closeInterstitialAd()">
+        关闭广告 · 返回首页
+      </button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function closeInterstitialAd() {
+  const el = document.getElementById('interstitialAd');
+  if (el) el.remove();
+  renderHome();
+}
+
+// ============================================================
+// LEVEL SELECT & LEARNING CARDS
+// ============================================================
+function renderLevelSelect() {
+  const saved = localStorage.getItem(LEVEL_KEY);
+  if (saved) { renderHome(); return; }
+  document.getElementById('body').className = 'home-bg';
+  document.getElementById('app').className = '';
+  document.getElementById('app').innerHTML = `
+    <div class="level-overlay" id="levelOverlay">
+      <div class="level-box">
+        <div class="level-emoji">🕊️</div>
+        <div class="level-title">欢迎来到非暴力沟通大挑战</div>
+        <div class="level-sub">
+          在开始之前，想了解一下你对非暴力沟通（NVC）的熟悉程度
+        </div>
+        <button class="level-btn" onclick="setLevel('expert')">
+          🏆 我精通非暴力沟通
+          <span class="lbl">深入学习过，经常在生活中实践运用</span>
+        </button>
+        <button class="level-btn" onclick="setLevel('advanced')">
+          🌟 我对NVC比较熟悉
+          <span class="lbl">读过相关书籍或文章，了解基本概念</span>
+        </button>
+        <button class="level-btn" onclick="setLevel('average')">
+          🌱 我大概了解NVC
+          <span class="lbl">听过这个概念，知道大概意思但不深入</span>
+        </button>
+        <button class="level-btn" onclick="setLevel('beginner')">
+          🐣 我第一次听说NVC
+          <span class="lbl">完全不了解，想先学习再体验游戏</span>
+        </button>
+      </div>
+    </div>`;
+}
+
+function setLevel(level) {
+  localStorage.setItem(LEVEL_KEY, level);
+  const overlay = document.getElementById('levelOverlay');
+  if (overlay) { overlay.style.transition = 'opacity 0.3s'; overlay.style.opacity = '0'; }
+  setTimeout(() => {
+    if (level === 'expert' || level === 'advanced') {
+      renderHome();
+    } else {
+      renderLearningCards(0);
+    }
+  }, 300);
+}
+
+function renderLearningCards(cardIdx) {
+  document.getElementById('body').className = 'home-bg';
+  document.getElementById('app').className = '';
+
+  const cards = [
+    {
+      emoji:'🌿', h1:'什么是非暴力沟通？',
+      h2:'Nonviolent Communication · NVC',
+      body:`<p class="learn-body">
+        <strong>非暴力沟通 (NVC)</strong> 是由美国心理学家 <strong>马歇尔·卢森堡</strong>（Marshall Rosenberg）博士在 1960 年代提出的一种沟通方式。它被联合国教科文组织列为全球非暴力解决冲突的 <strong>最佳实践之一</strong>。
+      </p>
+      <p class="learn-body">
+        NVC 的核心思想其实很简单：<strong>人与人之间的冲突，本质上是因为需要没有被满足</strong>，而不是因为哪一方是「坏人」。当我们停止指责、评判对方，转而表达自己的 <strong>观察、感受、需要和请求</strong> 时，沟通的墙就会变成桥。
+      </p>
+      <div class="learn-quote">
+        「当我们专注于澄清彼此的观察、感受、需要和请求——而不是诊断或评判——我们就能在内心深处发现连自己都未曾意识到的慈悲。」
+        <div class="q-author">—— 马歇尔·卢森堡《非暴力沟通》</div>
+      </div>
+      <div class="learn-stat">
+        <div class="learn-stat-item">
+          <div class="learn-stat-num">60+</div>
+          <div class="learn-stat-lbl">国家在实践</div>
+        </div>
+        <div class="learn-stat-item">
+          <div class="learn-stat-num">100万+</div>
+          <div class="learn-stat-lbl">全球学习者</div>
+        </div>
+        <div class="learn-stat-item">
+          <div class="learn-stat-num">87%</div>
+          <div class="learn-stat-lbl">关系改善率</div>
+        </div>
+      </div>
+      <p class="learn-body" style="margin-top:4px;">
+        NVC 被广泛应用于 <strong>家庭教育、亲密关系、职场沟通、冲突调解、心理咨询</strong> 等领域，甚至被用于国际和平谈判。它不是让你变得「软弱」，而是让你在坚持自己立场的同时，<strong>仍然与对方保持连接</strong>。
+      </p>`
+    },
+    {
+      emoji:'👁️', h1:'第一步：观察',
+      h2:'Observe — 不带评判地描述事实',
+      body:`<p class="learn-body">
+        NVC 的第一步是 <strong>「观察」</strong>——像摄像机一样记录发生了什么，不加任何评判、贴标签或夸大。<strong>这是最难的一步</strong>，因为我们太习惯一开口就下结论了。
+      </p>
+      <p class="learn-body">
+        关键区别在于：<strong>观察是「事实」</strong>，评判是「我认为的事实」。当你用「每次」「总是」「从来不」这些词时，你已经从观察滑向了评判。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 观察</div>
+        <div class="ex-text">「这周你有三天晚上 10 点后才回家，没有提前跟我说。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 评判</div>
+        <div class="ex-text">「你最近总是很晚才回来，心里还有这个家吗？」</div>
+      </div>
+      <p class="learn-body">
+        观察是沟通的 <strong>地基</strong>——地基歪了，后面说的再多都是 disputes。好消息是：观察是可以练习的，你只需要问自己一句「<strong>我真的看到了什么？</strong>」
+      </p>`
+    },
+    {
+      emoji:'💗', h1:'第二步：感受',
+      h2:'Feel — 说出真实的情绪，而非想法',
+      body:`<p class="learn-body">
+        第二步是表达你的 <strong>感受</strong>。注意：感受是说 <strong>你内心的情绪</strong>（开心、难过、焦虑、温暖），而不是你对对方的 <strong>想法或评判</strong>。
+      </p>
+      <p class="learn-body">
+        我们经常用「我觉得你……」开头，以为在表达感受，其实是在 <strong>指责对方</strong>。「我觉得你不在乎我」——这是想法，不是感受。真正的感受是 <strong>「我感到孤独」</strong>。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 感受</div>
+        <div class="ex-text">「我一个人等了一个小时，感到有些失落和担心。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 想法 / 指责</div>
+        <div class="ex-text">「我觉得你根本不把我的时间当回事。」</div>
+      </div>
+      <p class="learn-body">
+        心理学研究发现，大多数人能准确识别的情绪只有 <strong>3-5 种</strong>（开心、难过、生气、害怕），但实际上人类有上百种情绪。扩大你的 <strong>情绪词汇库</strong>，本身就是提升沟通能力的捷径：
+      </p>
+      <p class="learn-body" style="text-align:center;font-size:0.85rem;color:var(--text-light);">
+        温暖 · 安心 · 感动 · 期待 · 失落 · 沮丧 · 疲惫 · 焦虑 · 受伤 · 孤单
+      </p>`
+    },
+    {
+      emoji:'🎯', h1:'第三步：需要',
+      h2:'Need — 找到情绪背后的深层需求',
+      body:`<p class="learn-body">
+        <strong>所有的感受背后都有一个需要。</strong> 这是 NVC 最核心的洞见。你感到生气，可能是因为你需要 <strong>被尊重</strong>；你感到焦虑，可能是因为你需要 <strong>安全感</strong>；你感到孤独，可能是因为你需要 <strong>连接</strong>。
+      </p>
+      <p class="learn-body">
+        我们习惯在冲突中说「你让我很生气」——把责任推给对方。NVC 的转变是：<strong>「我感到生气，因为我需要被尊重。」</strong> 这个小小的句式变化，把力量从对方手中拿回了自己手里。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 需要</div>
+        <div class="ex-text">「我感到着急，因为我很在意我们的约定，需要被认真对待。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 指责</div>
+        <div class="ex-text">「你总是说话不算话，太让人失望了。」</div>
+      </div>
+      <div class="learn-quote">
+        「人类共通的需要其实并不多——理解、尊重、安全、归属、自主、意义。NVC 让我们看到：<strong>我们不是在对抗彼此，而是在各自争取未被满足的需要。</strong>」
+      </div>
+      <p class="learn-body" style="text-align:center;font-size:0.85rem;color:var(--text-light);">
+        被看见 · 被倾听 · 被尊重 · 安全感 · 信任 · 自主 · 连接 · 理解
+      </p>`
+    },
+    {
+      emoji:'🤝', h1:'第四步：请求',
+      h2:'Request — 提出具体可行的行动',
+      body:`<p class="learn-body">
+        最后一步是提出 <strong>请求</strong>——明确告诉对方，你希望接下来怎么做。<strong>关键区别：请求 ≠ 要求</strong>。请求允许对方说「不」，而要求背后藏着惩罚。
+      </p>
+      <p class="learn-body">
+        一个好的 NVC 请求有三个特点：<strong>具体的、可行的、用肯定句</strong>。「你能不能靠谱一点？」——这不是请求，是抱怨。「下次如果会晚到，可以提前给我发个消息吗？」——这才是请求。
+      </p>
+      <div class="learn-example good">
+        <div class="ex-label">✅ NVC 请求</div>
+        <div class="ex-text">「下次如果有变动，可以提前半天告诉我的手机发个消息吗？这样我可以重新安排时间。」</div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">❌ 要求 / 命令</div>
+        <div class="ex-text">「你下次再迟到就别来了。」</div>
+      </div>
+      <p class="learn-body">
+        NVC 的请求还有一个温柔的底层逻辑：<strong>即使对方说「不」，你们的关系也没有断裂</strong>。你可以继续探索——「那什么样的安排对你来说可行？」——在对话中找到双方都满意的方案。这才是真正的 <strong>合作式沟通</strong>。
+      </p>`
+    },
+    {
+      emoji:'🔄', h1:'完整流程 · 一个例子走通 NVC',
+      h2:'观察 → 感受 → 需要 → 请求',
+      body:`<p class="learn-body">
+        现在我们把四步串起来，看一个 <strong>完整的 NVC 对话</strong>。场景：伴侣又忘了关客厅的灯。
+      </p>
+      <div class="learn-example good" style="border-left-color:var(--nvc-green);">
+        <div class="ex-label" style="color:var(--nvc-dark);">🌿 NVC 方式</div>
+        <div class="ex-text">
+          <strong>👁️ 观察：</strong>「亲爱的，这周有三天我看到客厅灯开着，我们都睡了还没关。」<br>
+          <strong>💗 感受：</strong>「我有点担心电费，也会有些小小的失落。」<br>
+          <strong>🎯 需要：</strong>「因为我需要我们一起维护好这个家，也珍惜我们共同的资源。」<br>
+          <strong>🤝 请求：</strong>「下次睡前可以顺手关一下客厅灯吗？或者如果太累叫一声，我来关也行。」
+        </div>
+      </div>
+      <div class="learn-example bad">
+        <div class="ex-label">🔥 平时我们可能会说</div>
+        <div class="ex-text">「你怎么又忘了关灯？跟你说了多少遍了？电费不要钱啊？你总是这样马马虎虎的！」</div>
+      </div>
+      <p class="learn-body">
+        感受到区别了吗？第一种方式对方 <strong>不会防御</strong>，因为里面没有攻击。第二种方式一开口就点燃了战火——对方要么反击，要么冷战。而你们争论的 <strong>核心其实是同一件事</strong>：希望这个家更好。
+      </p>
+      <div class="learn-quote">
+        NVC 不是让你压抑情绪，而是让你在情绪中仍然能 <strong>清晰地表达自己，温柔地连接他人</strong>。这不是软弱——这是最高级的沟通力量。
+      </div>
+      <p class="learn-body" style="text-align:center;font-weight:700;color:var(--nvc-dark);">
+        准备好了吗？现在去游戏中亲自实践吧！🌿
+      </p>`
+    }
+  ];
+
+  const card = cards[cardIdx];
+  const total = cards.length;
+
+  document.getElementById('app').innerHTML = `
+    <div class="learn-card">
+      <div class="learn-progress">
+        ${cards.map((_, i) =>
+          `<span class="${i === cardIdx ? 'active' : (i < cardIdx ? 'done' : '')}"></span>`
+        ).join('')}
+      </div>
+      <div class="learn-emoji">${card.emoji}</div>
+      <div class="learn-h1">${card.h1}</div>
+      <div class="learn-h2">${card.h2}</div>
+      ${card.body}
+      <div class="learn-btns">
+        ${cardIdx > 0
+          ? `<button class="learn-btn secondary" onclick="renderLearningCards(${cardIdx-1})">← 上一页</button>`
+          : ''}
+        ${cardIdx < total - 1
+          ? `<button class="learn-btn primary" onclick="renderLearningCards(${cardIdx+1})">下一页 →</button>`
+          : `<button class="learn-btn primary" onclick="renderHome()">🎮 开始游戏！</button>`}
+      </div>
+    </div>`;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+renderLevelSelect();
+</script>
+</body>
+</html>
